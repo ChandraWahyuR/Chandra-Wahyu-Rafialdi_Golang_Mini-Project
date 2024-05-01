@@ -24,6 +24,7 @@ func (uc *UserController) Register(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, domain.NewErrorResponse("Invalid password format"))
 	}
 
+	// Confirm password
 	if userRegister.Password != userRegister.ConfirmPassword {
 		return c.JSON(http.StatusBadRequest, domain.NewErrorResponse("Password and confirm password do not match"))
 	}
