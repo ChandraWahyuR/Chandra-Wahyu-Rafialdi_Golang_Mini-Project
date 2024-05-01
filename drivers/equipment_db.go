@@ -10,7 +10,7 @@ import (
 type Equipment struct {
 	ID          int    `json:"id" gorm:"primaryKey;autoIncrement:true"`
 	Name        string `json:"name"`
-	CategoryID  int    `json:"category_id"`
+	Category    string `json:"category"`
 	Description string `json:"description" `
 	Image       string
 	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
@@ -18,17 +18,11 @@ type Equipment struct {
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
-type Categories struct {
-	ID   int    `json:"id" gorm:"primaryKey;autoIncrement:true"`
-	Name string `json:"name"`
-}
-
 // Conversi objek for domain layer, later save to gorm
 func FromEquipmentUseCase(eq *domain.Equipment) *Equipment {
 	return &Equipment{
 		ID:          eq.ID,
 		Name:        eq.Name,
-		CategoryID:  eq.Category.ID,
 		Description: eq.Description,
 		Image:       eq.Image,
 		CreatedAt:   eq.CreatedAt,
@@ -38,11 +32,10 @@ func FromEquipmentUseCase(eq *domain.Equipment) *Equipment {
 
 // for retrive data from gorm
 func (eq *Equipment) ToEquipmentUseCase() *domain.Equipment {
-	var category domain.Categories
 	return &domain.Equipment{
 		ID:          eq.ID,
 		Name:        eq.Name,
-		Category:    category,
+		Category:    eq.Category,
 		Description: eq.Description,
 		Image:       eq.Image,
 		CreatedAt:   eq.CreatedAt,
