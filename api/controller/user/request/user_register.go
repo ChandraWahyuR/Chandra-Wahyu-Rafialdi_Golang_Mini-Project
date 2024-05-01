@@ -3,10 +3,11 @@ package request
 import "prototype/domain"
 
 type UserRegister struct {
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username        string `json:"username"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirm_password"`
 }
 
 func (r *UserRegister) ToEntities() *domain.User {
