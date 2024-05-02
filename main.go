@@ -1,6 +1,7 @@
 package main
 
 import (
+	controllersEq "prototype/api/controller/equipment"
 	controllers "prototype/api/controller/user"
 	"prototype/api/routes"
 	"prototype/config"
@@ -9,12 +10,7 @@ import (
 	"prototype/usecase"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
-
-type App struct {
-	DB *gorm.DB
-}
 
 func main() {
 	config.LoadFileEnv()
@@ -24,20 +20,18 @@ func main() {
 	e := echo.New()
 
 	userRepo := repository.NewUserRepo(db)
+	equipmentRepo := repository.NewEquipmentRepo(db)
 
 	userUseCase := usecase.NewUserUseCase(userRepo)
+	equipmentUseCase := usecase.NewEquipmentUseCase(equipmentRepo)
 
 	userController := controllers.NewUserController(userUseCase)
+	equipmentController := controllersEq.NewEquipmentController(equipmentUseCase)
 
 	routes := routes.RouteController{
-		SignUpUser: userController,
+		SignUpUser:     userController,
+		EquipmentRoute: equipmentController,
 	}
 	routes.InitRoute(e)
 	e.Logger.Fatal(e.Start(":8080"))
 }
-
-// refrence
-// https://dev.to/karanpratapsingh/connecting-to-postgresql-using-gorm-24fj
-
-// Unique
-// https://stackoverflow.com/questions/73701967/make-user-email-field-unique

@@ -28,11 +28,17 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
+	imageURL, err := FetchImage(equip.Name)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch equipment image"})
+	}
+
 	newEquipment := domain.Equipment{
 		Name:        equip.Name,
 		Category:    equip.Category,
 		Description: equip.Description,
-		Image:       equip.Image,
+		Image:       imageURL,
+		Price:       equip.Price,
 	}
 
 	resp, err := uc.equipmentUseCase.PostEquipment(&newEquipment)
@@ -53,7 +59,7 @@ func (uc *EquipmentController) DeleteEquipment(c echo.Context) error {
 	if equipment != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Delete Sucsess", nil))
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Delete Sucsess", equipment))
 }
 
 func (uc *EquipmentController) GetById(c echo.Context) error {
