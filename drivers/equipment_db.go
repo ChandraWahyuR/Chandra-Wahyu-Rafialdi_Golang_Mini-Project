@@ -8,11 +8,12 @@ import (
 )
 
 type Equipment struct {
-	ID          int    `json:"id" gorm:"primaryKey;autoIncrement:true"`
-	Name        string `json:"name"`
-	Category    string `json:"category"`
-	Description string `json:"description" `
-	Image       string
+	ID          int            `json:"id" gorm:"primaryKey;autoIncrement:true"`
+	Name        string         `json:"name"`
+	Category    string         `json:"category"`
+	Description string         `json:"description" `
+	Image       string         `json:"image"`
+	Price       int            `json:"price"`
 	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
@@ -25,6 +26,7 @@ func FromEquipmentUseCase(eq *domain.Equipment) *Equipment {
 		Name:        eq.Name,
 		Description: eq.Description,
 		Image:       eq.Image,
+		Price:       eq.Price,
 		CreatedAt:   eq.CreatedAt,
 		UpdatedAt:   eq.UpdatedAt,
 	}
@@ -38,6 +40,7 @@ func (eq *Equipment) ToEquipmentUseCase() *domain.Equipment {
 		Category:    eq.Category,
 		Description: eq.Description,
 		Image:       eq.Image,
+		Price:       eq.Price,
 		CreatedAt:   eq.CreatedAt,
 		UpdatedAt:   eq.UpdatedAt,
 	}

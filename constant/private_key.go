@@ -6,3 +6,7 @@ import "os"
 func PrivateKeyJWT() string {
 	return os.Getenv("PRIVATE_KEY_JWT")
 }
+
+func ImageApiKey() string {
+	return os.Getenv("PRIVATE_KEY_PEXELS")
+}

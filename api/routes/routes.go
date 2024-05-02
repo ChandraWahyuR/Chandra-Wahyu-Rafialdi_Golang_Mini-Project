@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"prototype/api/controller/equipment"
 	user "prototype/api/controller/user"
 	"prototype/api/middleware/authorization"
 	"prototype/constant"
@@ -10,7 +11,8 @@ import (
 )
 
 type RouteController struct {
-	SignUpUser *user.UserController
+	SignUpUser     *user.UserController
+	EquipmentRoute *equipment.EquipmentController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -21,7 +23,9 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth.Use(echojwt.JWT([]byte(constant.PrivateKeyJWT())))
 
 	// User
-
+	eAuth.GET("/equipment", r.EquipmentRoute.GetAll)
+	eAuth.GET("/equipment/:id", r.EquipmentRoute.GetById)
 	// Admin
-	eAuth.POST("/admin/equpment", r.SignUpUser.Login, authorization.OnlyAdmin)
+	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
+	eAuth.DELETE("/admin/equipment/:id", r.EquipmentRoute.DeleteEquipment, authorization.OnlyAdmin)
 }
