@@ -12,6 +12,7 @@ type Equipment struct {
 	Category    string
 	Description string
 	Image       string
+	Price       int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt

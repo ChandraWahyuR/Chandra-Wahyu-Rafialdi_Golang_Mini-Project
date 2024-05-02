@@ -8,6 +8,7 @@ type EquipmentResponse struct {
 	Category    string `json:"category"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
+	Price       int    `json:"price"`
 }
 
 func FromUseCase(equip *domain.Equipment) *EquipmentResponse {
@@ -17,5 +18,6 @@ func FromUseCase(equip *domain.Equipment) *EquipmentResponse {
 		Category:    equip.Category,
 		Description: equip.Description,
 		Image:       equip.Image,
+		Price:       equip.Price,
 	}
 }

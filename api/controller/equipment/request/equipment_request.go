@@ -4,9 +4,10 @@ import "prototype/domain"
 
 type EquipmentRequest struct {
 	Name        string `json:"name"`
-	Category    string
+	Category    string `json:"category"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
+	Price       int    `json:"price"`
 }
 
 func (r *EquipmentRequest) ToEntities() *domain.Equipment {
@@ -15,5 +16,6 @@ func (r *EquipmentRequest) ToEntities() *domain.Equipment {
 		Category:    r.Category,
 		Description: r.Description,
 		Image:       r.Image,
+		Price:       r.Price,
 	}
 }
