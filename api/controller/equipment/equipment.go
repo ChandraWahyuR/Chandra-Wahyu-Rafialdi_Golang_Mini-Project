@@ -3,6 +3,7 @@ package equipment
 import (
 	"net/http"
 	"prototype/api/controller/equipment/request"
+	"prototype/api/controller/equipment/response"
 	"prototype/domain"
 	"prototype/utils"
 	"strconv"
@@ -19,7 +20,12 @@ func (uc *EquipmentController) GetAll(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	return c.JSON(http.StatusOK, res)
+
+	equipmentResponses := make([]*response.EquipmentResponse, 0)
+	for _, equip := range res {
+		equipmentResponses = append(equipmentResponses, response.FromUseCase(equip))
+	}
+	return c.JSON(http.StatusOK, equipmentResponses)
 }
 
 func (uc *EquipmentController) PostEquipment(c echo.Context) error {
@@ -33,6 +39,7 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch equipment image"})
 	}
 
+	// Save to structi Equipment
 	newEquipment := domain.Equipment{
 		Name:        equip.Name,
 		Category:    equip.Category,
@@ -45,7 +52,10 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), domain.NewErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", resp))
+
+	// Show response with format from response folder
+	equipmentResponse := response.FromUseCase(&resp)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", equipmentResponse))
 }
 
 func (uc *EquipmentController) DeleteEquipment(c echo.Context) error {
@@ -59,6 +69,7 @@ func (uc *EquipmentController) DeleteEquipment(c echo.Context) error {
 	if equipment != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
+
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Delete Sucsess", equipment))
 }
 
@@ -73,8 +84,8 @@ func (uc *EquipmentController) GetById(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
-
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", equipment))
+	equipmentResponse := response.FromUseCase(equipment)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", equipmentResponse))
 }
 
 func NewEquipmentController(equipmentUseCase domain.EquipmentUseCaseInterface) *EquipmentController {
