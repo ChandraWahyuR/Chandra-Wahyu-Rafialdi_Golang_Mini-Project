@@ -2,6 +2,7 @@ package routes
 
 import (
 	"prototype/api/controller/equipment"
+	"prototype/api/controller/rent"
 	user "prototype/api/controller/user"
 	"prototype/api/middleware/authorization"
 	"prototype/constant"
@@ -13,6 +14,7 @@ import (
 type RouteController struct {
 	SignUpUser     *user.UserController
 	EquipmentRoute *equipment.EquipmentController
+	RentRoute      *rent.RentController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
