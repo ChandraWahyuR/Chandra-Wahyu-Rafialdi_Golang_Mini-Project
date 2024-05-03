@@ -4,17 +4,20 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Rent struct {
 	ID          int
 	UserId      uuid.UUID
 	EquipmentId int
+	Equipment   Equipment
 	Quantity    int
 	Total       int
 	DateStart   time.Time
 	UpdatedAt   time.Time
 	Duration    int
+	DeletedAt   gorm.DeletedAt
 }
 
 type RentRepositoryInterface interface {

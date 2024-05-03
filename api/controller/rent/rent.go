@@ -25,8 +25,8 @@ func (uc *RentController) GetAll(c echo.Context) error {
 	}
 
 	respon := make([]*response.RentResponse, 0)
-	for _, equip := range res {
-		respon = append(respon, response.FromUseCase(equip))
+	for _, respond := range res {
+		respon = append(respon, response.FromUseCase(respond))
 	}
 	return c.JSON(http.StatusOK, respon)
 }
@@ -36,7 +36,6 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	// then insert it to rent user_id
 	token := c.Request().Header.Get("Authorization")
 	// fmt.Println("Received token:", token)
-
 	userID, _, _, err := md.ExtractToken(token)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Unauthorized"})
@@ -48,13 +47,20 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	}
 
 	// Took equipment data (pending)
+	// Ambil data equipment berdasarkan ID
+	equipment, err := uc.equipmentusecase.GetById(rent.EquipmentId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+	}
 
 	rentData := domain.Rent{
-		UserId:    userID,
-		Quantity:  rent.Quantity,
-		Total:     rent.Total,
-		DateStart: time.Now(),
-		Duration:  rent.Duration,
+		UserId:      userID,
+		EquipmentId: rent.EquipmentId,
+		Equipment:   *equipment,
+		Quantity:    rent.Quantity,
+		Total:       rent.Total,
+		DateStart:   time.Now(),
+		Duration:    rent.Duration,
 	}
 
 	resp, err := uc.rentusecase.PostRent(&rentData)
@@ -74,9 +80,6 @@ func (uc *RentController) DeleteRent(c echo.Context) error {
 	}
 	rent := uc.rentusecase.DeleteRent(id)
 
-	if rent != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
-	}
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Delete Sucsess", rent))
 }
 
@@ -101,6 +104,7 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	if err := c.Bind(&rent); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
+
 	rentData := domain.Rent{
 		Quantity:  rent.Quantity,
 		Total:     rent.Total,
@@ -123,8 +127,9 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	return c.JSON(http.StatusOK, respon)
 }
 
-func NewRentController(rentusecase domain.RentUseCaseInterface) *RentController {
+func NewRentController(rentusecase domain.RentUseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentController {
 	return &RentController{
-		rentusecase: rentusecase,
+		rentusecase:      rentusecase,
+		equipmentusecase: equipment,
 	}
 }
