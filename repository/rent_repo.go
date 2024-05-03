@@ -27,22 +27,17 @@ func (r *RentRepo) PostRent(rent *domain.Rent) error {
 }
 
 func (r *RentRepo) GetAll() ([]*domain.Rent, error) {
-	var db []*drivers.Rent
-	if err := r.DB.Find(&db).Error; err != nil {
+	var rents []*domain.Rent
+	if err := r.DB.Preload("Equipment").Find(&rents).Error; err != nil {
 		return nil, err
 	}
 
-	var rent []*domain.Rent
-	for _, value := range db {
-		rent = append(rent, value.ToRentUseCase())
-	}
-
-	return rent, nil
+	return rents, nil
 }
 
 func (r *RentRepo) GetById(id int) (*domain.Rent, error) {
 	db := &drivers.Rent{}
-	if err := r.DB.First(db, id).Error; err != nil {
+	if err := r.DB.Preload("Equipment").First(db, id).Error; err != nil {
 		return nil, err
 	}
 	return db.ToRentUseCase(), nil
@@ -53,8 +48,8 @@ func (r *RentRepo) DeleteRent(id int) error {
 	if err := r.DB.Where("id = ?", id).Delete(&db).Error; err != nil {
 		return err
 	}
-
-	if err := r.DB.Model(db).Update("deleted_at", time.Now()).Error; err != nil {
+	// Soft delete
+	if err := r.DB.Model(db).Update("deleted_at", time.Now()).Where("id = ?", id).Error; err != nil {
 		return err
 	}
 	return nil

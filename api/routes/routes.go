@@ -29,13 +29,13 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth.GET("/equipment/:id", r.EquipmentRoute.GetById)
 	// # rent
 	eAuth.POST("/rent", r.RentRoute.PostRent)
-	eAuth.GET("/rent", r.RentRoute.GetAll)
-	eAuth.GET("/rent/:id", r.RentRoute.GetById)
+	eAuth.PUT("/rent/:id", r.RentRoute.UpdateRent)
 
 	// Admin
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
 	eAuth.DELETE("/admin/equipment/:id", r.EquipmentRoute.DeleteEquipment, authorization.OnlyAdmin)
 	// # rent
-	eAuth.PUT("/rent/:id", r.RentRoute.UpdateRent, authorization.OnlyAdmin)
+	eAuth.GET("/rent", r.RentRoute.GetAll, authorization.OnlyAdmin)
+	eAuth.GET("/rent/:id", r.RentRoute.GetById, authorization.OnlyAdmin)
 	eAuth.DELETE("/rent/:id", r.RentRoute.DeleteRent, authorization.OnlyAdmin)
 }
