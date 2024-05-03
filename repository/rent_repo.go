@@ -12,7 +12,7 @@ type RentRepo struct {
 	DB *gorm.DB
 }
 
-func NewEquipmentRent(db *gorm.DB) *RentRepo {
+func NewRentRepo(db *gorm.DB) *RentRepo {
 	return &RentRepo{DB: db}
 }
 
@@ -48,7 +48,7 @@ func (r *RentRepo) GetById(id int) (*domain.Rent, error) {
 	return db.ToRentUseCase(), nil
 }
 
-func (r *RentRepo) DeleteEquipment(id int) error {
+func (r *RentRepo) DeleteRent(id int) error {
 	db := &drivers.Rent{}
 	if err := r.DB.Where("id = ?", id).Delete(&db).Error; err != nil {
 		return err
@@ -58,4 +58,19 @@ func (r *RentRepo) DeleteEquipment(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *RentRepo) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error) {
+	db := &drivers.Rent{}
+	if err := r.DB.Where("id = ?", id).First(&db).Error; err != nil {
+		return nil, err
+	}
+
+	// Update
+	resp := drivers.FromRentUseCase(rent)
+	if err := r.DB.Save(resp).Error; err != nil {
+		return nil, err
+	}
+
+	return resp.ToRentUseCase(), nil
 }

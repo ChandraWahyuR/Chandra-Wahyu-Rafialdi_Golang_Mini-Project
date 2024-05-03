@@ -21,6 +21,7 @@ type RentRepositoryInterface interface {
 	PostRent(rent *Rent) error
 	GetAll() ([]*Rent, error)
 	GetById(ID int) (*Rent, error)
+	UpdateRent(ID int, rent *Rent) (*Rent, error)
 	DeleteRent(ID int) error
 }
 
@@ -28,5 +29,6 @@ type RentUseCaseInterface interface {
 	PostRent(*Rent) (Rent, error)
 	GetAll() ([]*Rent, error)
 	GetById(ID int) (*Rent, error)
+	UpdateRent(ID int, rent *Rent) (*Rent, error)
 	DeleteRent(ID int) error
 }
