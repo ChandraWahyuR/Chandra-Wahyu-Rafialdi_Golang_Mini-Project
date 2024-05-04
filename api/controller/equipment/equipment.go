@@ -13,6 +13,7 @@ import (
 
 type EquipmentController struct {
 	equipmentUseCase domain.EquipmentUseCaseInterface
+	categoryUseCase  domain.CategoryEquipmentUseCaseInterface
 }
 
 func (uc *EquipmentController) GetAll(c echo.Context) error {
@@ -39,10 +40,15 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch equipment image"})
 	}
 
+	category, err := uc.categoryUseCase.GetById(equip.CategoryId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+	}
 	// Save to structi Equipment
 	newEquipment := domain.Equipment{
 		Name:        equip.Name,
-		Category:    equip.Category,
+		CategoryId:  equip.CategoryId,
+		Category:    *category,
 		Description: equip.Description,
 		Image:       imageURL,
 		Price:       equip.Price,
@@ -88,8 +94,9 @@ func (uc *EquipmentController) GetById(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", equipmentResponse))
 }
 
-func NewEquipmentController(equipmentUseCase domain.EquipmentUseCaseInterface) *EquipmentController {
+func NewEquipmentController(equipmentUseCase domain.EquipmentUseCaseInterface, category domain.CategoryEquipmentUseCaseInterface) *EquipmentController {
 	return &EquipmentController{
 		equipmentUseCase: equipmentUseCase,
+		categoryUseCase:  category,
 	}
 }

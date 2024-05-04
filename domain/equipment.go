@@ -9,7 +9,8 @@ import (
 type Equipment struct {
 	ID          int
 	Name        string
-	Category    string
+	CategoryId  int
+	Category    CategoryEquipment
 	Description string
 	Image       string
 	Price       int
