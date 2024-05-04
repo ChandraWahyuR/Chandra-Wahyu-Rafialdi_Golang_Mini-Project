@@ -4,7 +4,7 @@ import "prototype/domain"
 
 type EquipmentRequest struct {
 	Name        string `json:"name"`
-	Category    string `json:"category"`
+	CategoryId  int    `json:"category_id"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
 	Price       int    `json:"price"`
@@ -13,7 +13,7 @@ type EquipmentRequest struct {
 func (r *EquipmentRequest) ToEntities() *domain.Equipment {
 	return &domain.Equipment{
 		Name:        r.Name,
-		Category:    r.Category,
+		CategoryId:  r.CategoryId,
 		Description: r.Description,
 		Image:       r.Image,
 		Price:       r.Price,

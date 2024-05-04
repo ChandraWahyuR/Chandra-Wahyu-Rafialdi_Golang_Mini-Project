@@ -18,7 +18,7 @@ func NewEquipmentRepo(db *gorm.DB) *EquipmentRepo {
 
 func (r *EquipmentRepo) PostEquipment(equip *domain.Equipment) error {
 	resp := drivers.FromEquipmentUseCase(equip)
-	if err := r.DB.Create(&resp).Error; err != nil {
+	if err := r.DB.Preload("Category").Create(&resp).Error; err != nil {
 		return err
 	}
 
@@ -27,17 +27,12 @@ func (r *EquipmentRepo) PostEquipment(equip *domain.Equipment) error {
 }
 
 func (r *EquipmentRepo) GetAll() ([]*domain.Equipment, error) {
-	var db []*drivers.Equipment
-	if err := r.DB.Find(&db).Error; err != nil {
+	var db []*domain.Equipment
+	if err := r.DB.Preload("Category").Find(&db).Error; err != nil {
 		return nil, err
 	}
 
-	var equipment []*domain.Equipment
-	for _, equip := range db {
-		equipment = append(equipment, equip.ToEquipmentUseCase())
-	}
-
-	return equipment, nil
+	return db, nil
 }
 
 func (r *EquipmentRepo) GetById(id int) (*domain.Equipment, error) {

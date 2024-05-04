@@ -2,6 +2,7 @@ package routes
 
 import (
 	"prototype/api/controller/equipment"
+	"prototype/api/controller/equipment/category"
 	"prototype/api/controller/rent"
 	user "prototype/api/controller/user"
 	"prototype/api/middleware/authorization"
@@ -12,9 +13,10 @@ import (
 )
 
 type RouteController struct {
-	SignUpUser     *user.UserController
-	EquipmentRoute *equipment.EquipmentController
-	RentRoute      *rent.RentController
+	SignUpUser        *user.UserController
+	EquipmentRoute    *equipment.EquipmentController
+	RentRoute         *rent.RentController
+	CategoryEquipment *category.CategoryController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -34,6 +36,12 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	// Admin
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
 	eAuth.DELETE("/admin/equipment/:id", r.EquipmentRoute.DeleteEquipment, authorization.OnlyAdmin)
+
+	// Category
+	eAuth.GET("admin/equipment/category", r.CategoryEquipment.GetAll, authorization.OnlyAdmin)
+	eAuth.POST("/admin/equipment/category", r.CategoryEquipment.PostCategory, authorization.OnlyAdmin)
+	eAuth.DELETE("/admin/equipment/category/:id", r.CategoryEquipment.DeleteCategory, authorization.OnlyAdmin)
+
 	// # rent
 	eAuth.GET("/rent", r.RentRoute.GetAll, authorization.OnlyAdmin)
 	eAuth.GET("/rent/:id", r.RentRoute.GetById, authorization.OnlyAdmin)
