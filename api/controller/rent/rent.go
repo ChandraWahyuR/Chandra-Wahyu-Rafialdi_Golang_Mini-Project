@@ -46,19 +46,18 @@ func (uc *RentController) PostRent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	// Took equipment data (pending)
-	// Ambil data equipment berdasarkan ID
+	// Took equipment data
 	equipment, err := uc.equipmentusecase.GetById(rent.EquipmentId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
 	}
-
+	totalRent := equipment.Price * rent.Duration * rent.Quantity
 	rentData := domain.Rent{
 		UserId:      userID,
 		EquipmentId: rent.EquipmentId,
 		Equipment:   *equipment,
 		Quantity:    rent.Quantity,
-		Total:       rent.Total,
+		Total:       totalRent,
 		DateStart:   time.Now(),
 		Duration:    rent.Duration,
 	}
@@ -105,18 +104,32 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	rentData := domain.Rent{
-		Quantity:  rent.Quantity,
-		Total:     rent.Total,
-		DateStart: time.Now(),
-		Duration:  rent.Duration,
-	}
-
 	// Get ID
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+	}
+
+	// Take equipment id from table
+	// And equipment took the id to accsess price from table equipment id
+	rentToUpdate, err := uc.rentusecase.GetById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to fetch rent data"})
+	}
+
+	equipment, err := uc.equipmentusecase.GetById(rentToUpdate.EquipmentId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+	}
+
+	// Update data
+	totalRent := equipment.Price * rent.Duration * rent.Quantity
+	rentData := domain.Rent{
+		Quantity:  rent.Quantity,
+		DateStart: time.Now(),
+		Total:     totalRent,
+		Duration:  rent.Duration,
 	}
 
 	updateRent, err := uc.rentusecase.UpdateRent(id, &rentData)
