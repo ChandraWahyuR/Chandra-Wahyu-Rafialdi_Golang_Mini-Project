@@ -35,16 +35,24 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	imageURL, err := FetchImage(equip.Name)
+	imageFile, err := c.FormFile("image")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to get image file"})
+	}
+
+	// Upload a image
+	imageURL, err := GetImage(imageFile)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch equipment image"})
 	}
 
+	// Retrieve category by id
 	category, err := uc.categoryUseCase.GetById(equip.CategoryId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
 	}
-	// Save to structi Equipment
+
+	// Save data to struct Equipment
 	newEquipment := domain.Equipment{
 		Name:        equip.Name,
 		CategoryId:  equip.CategoryId,
@@ -54,12 +62,12 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 		Price:       equip.Price,
 	}
 
+	// Post equipment to database
 	resp, err := uc.equipmentUseCase.PostEquipment(&newEquipment)
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), domain.NewErrorResponse(err.Error()))
 	}
 
-	// Show response with format from response folder
 	equipmentResponse := response.FromUseCase(&resp)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", equipmentResponse))
 }
