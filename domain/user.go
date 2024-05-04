@@ -7,15 +7,18 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID
-	Username  string
-	Name      string
-	Email     string
-	Password  string
-	Token     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	ID          uuid.UUID
+	Username    string
+	Name        string
+	Email       string
+	Address     string
+	PhoneNumber int
+	Image       string
+	Password    string
+	Token       string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   time.Time
 }
 
 type RepositoryInterface interface {
