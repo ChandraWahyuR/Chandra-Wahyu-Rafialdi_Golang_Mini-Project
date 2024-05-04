@@ -1,43 +1,38 @@
 package equipment
 
 import (
-	"encoding/json"
-	"net/http"
-	"prototype/constant"
+	"context"
+	"log"
+	"mime/multipart"
+	"os"
+
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 )
 
-func FetchImage(equipment string) (string, error) {
-	// Get Publick API from pexel
-	url := "https://api.pexels.com/v1/search?query=" + equipment
-	req, err := http.NewRequest("GET", url, nil)
+func GetImage(imageFile *multipart.FileHeader) (string, error) {
+	cloudinaryURL := os.Getenv("CLOUDINARY_URL")
+	uploadFolder := os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
+
+	// Create instance for cloudinary
+	cld, err := cloudinary.NewFromURL(cloudinaryURL)
+	if err != nil {
+		log.Fatalf("Error creating Cloudinary instance: %v", err)
+	}
+
+	// Upload image
+	file, err := imageFile.Open()
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	// Upload to cloudinary
+	uploadParams := uploader.UploadParams{Folder: uploadFolder}
+	uploadResult, err := cld.Upload.Upload(context.Background(), file, uploadParams)
 	if err != nil {
 		return "", err
 	}
 
-	// Authorization to access api pexel with your secret api pexel
-	req.Header.Set("Authorization", constant.ImageApiKey())
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	// Decode to json from url images
-	var response struct {
-		Photos []struct {
-			Src struct {
-				Original string `json:"original"`
-			} `json:"src"`
-		} `json:"photos"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return "", err
-	}
-
-	// If image is not found return, and if dound get the first image from api list
-	if len(response.Photos) == 0 {
-		return "", nil
-	}
-	return response.Photos[0].Src.Original, nil
+	return uploadResult.SecureURL, nil
 }

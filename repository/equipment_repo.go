@@ -49,7 +49,7 @@ func (r *EquipmentRepo) DeleteEquipment(id int) error {
 		return err
 	}
 
-	if err := r.DB.Model(db).Update("deleted_at", time.Now()).Error; err != nil {
+	if err := r.DB.Model(db).Update("deleted_at", time.Now()).Where("id = ?", id).Error; err != nil {
 		return err
 	}
 	return nil

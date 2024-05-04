@@ -3,11 +3,11 @@ package request
 import "prototype/domain"
 
 type EquipmentRequest struct {
-	Name        string `json:"name"`
-	CategoryId  int    `json:"category_id"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
-	Price       int    `json:"price"`
+	Name        string `json:"name" form:"name"`
+	CategoryId  int    `json:"category_id" form:"category_id"`
+	Description string `json:"description" form:"description"`
+	Image       string `json:"image" form:"image"`
+	Price       int    `json:"price" form:"price"`
 }
 
 func (r *EquipmentRequest) ToEntities() *domain.Equipment {
