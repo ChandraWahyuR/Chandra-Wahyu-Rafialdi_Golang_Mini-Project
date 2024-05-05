@@ -26,6 +26,8 @@ type RentRepositoryInterface interface {
 	GetById(ID int) (*Rent, error)
 	UpdateRent(ID int, rent *Rent) (*Rent, error)
 	DeleteRent(ID int) error
+
+	GetUserID(userID uuid.UUID) ([]*Rent, error)
 }
 
 type RentUseCaseInterface interface {
@@ -34,4 +36,6 @@ type RentUseCaseInterface interface {
 	GetById(ID int) (*Rent, error)
 	UpdateRent(ID int, rent *Rent) (*Rent, error)
 	DeleteRent(ID int) error
+
+	GetUserID(userID uuid.UUID) ([]*Rent, error)
 }

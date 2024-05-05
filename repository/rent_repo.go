@@ -5,6 +5,7 @@ import (
 	"prototype/drivers"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -68,4 +69,12 @@ func (r *RentRepo) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error) {
 	}
 
 	return resp.ToRentUseCase(), nil
+}
+
+func (r *RentRepo) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
+	var rents []*domain.Rent
+	if err := r.DB.Where("user_id = ?", userID).Find(&rents).Error; err != nil {
+		return nil, err
+	}
+	return rents, nil
 }

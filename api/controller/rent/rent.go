@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -138,6 +139,21 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	}
 	respon := response.FromUseCase(updateRent)
 	return c.JSON(http.StatusOK, respon)
+}
+
+func (uc *RentController) GetByUserID(c echo.Context) error {
+	userID := c.Param("id")
+	parsedUserID, err := uuid.Parse(userID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user_id format"})
+	}
+
+	rents, err := uc.rentusecase.GetUserID(parsedUserID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch rent data"})
+	}
+
+	return c.JSON(http.StatusOK, rents)
 }
 
 func NewRentController(rentusecase domain.RentUseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentController {

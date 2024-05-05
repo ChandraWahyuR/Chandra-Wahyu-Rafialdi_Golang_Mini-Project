@@ -3,6 +3,8 @@ package usecase
 import (
 	"prototype/constant"
 	"prototype/domain"
+
+	"github.com/google/uuid"
 )
 
 type RentUseCase struct {
@@ -76,4 +78,12 @@ func (u *RentUseCase) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error
 		return nil, err
 	}
 	return updatedRent, nil
+}
+
+func (u *RentUseCase) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
+	rents, err := u.repository.GetUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return rents, nil
 }
