@@ -8,7 +8,6 @@ import (
 	"prototype/domain"
 	"prototype/utils"
 	"strconv"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -52,15 +51,13 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
 	}
-	totalRent := equipment.Price * rent.Duration * rent.Quantity
+	totalRent := equipment.Price * rent.Quantity
 	rentData := domain.Rent{
 		UserId:      userID,
 		EquipmentId: rent.EquipmentId,
 		Equipment:   *equipment,
 		Quantity:    rent.Quantity,
 		Total:       totalRent,
-		DateStart:   time.Now(),
-		Duration:    rent.Duration,
 	}
 
 	resp, err := uc.rentusecase.PostRent(&rentData)
@@ -125,12 +122,10 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	}
 
 	// Update data
-	totalRent := equipment.Price * rent.Duration * rent.Quantity
+	totalRent := equipment.Price * rent.Quantity
 	rentData := domain.Rent{
-		Quantity:  rent.Quantity,
-		DateStart: time.Now(),
-		Total:     totalRent,
-		Duration:  rent.Duration,
+		Quantity: rent.Quantity,
+		Total:    totalRent,
 	}
 
 	updateRent, err := uc.rentusecase.UpdateRent(id, &rentData)

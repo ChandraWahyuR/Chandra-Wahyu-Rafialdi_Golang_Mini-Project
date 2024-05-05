@@ -63,7 +63,6 @@ func (u *RentConfirmUseCase) ConfirmAdmin(id int, conf *domain.RentConfirm) (*do
 	}
 
 	// if data is exist, data can be updated
-
 	updatedRent, err := u.repository.ConfirmAdmin(id, existingRent)
 	if err != nil {
 		return nil, err

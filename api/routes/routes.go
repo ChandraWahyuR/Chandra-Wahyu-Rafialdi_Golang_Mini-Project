@@ -40,6 +40,8 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 
 	// # rent confirm
 	eAuth.POST("/confirm", r.RentConfirm.PostRentConfirm)
+	eAuth.GET("/confirm", r.RentConfirm.GetAll)
+	eAuth.GET("/confirm/:id", r.RentConfirm.GetById)
 
 	// Admin
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)

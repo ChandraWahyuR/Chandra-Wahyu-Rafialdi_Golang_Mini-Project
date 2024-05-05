@@ -70,8 +70,6 @@ func (u *RentUseCase) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error
 	// if data is exist, data can be updated
 	existingRent.Quantity = rent.Quantity
 	existingRent.Total = rent.Total
-	existingRent.DateStart = rent.DateStart
-	existingRent.Duration = rent.Duration
 
 	updatedRent, err := u.repository.UpdateRent(id, existingRent)
 	if err != nil {

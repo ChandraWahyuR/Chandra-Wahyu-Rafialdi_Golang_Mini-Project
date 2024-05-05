@@ -7,6 +7,7 @@ type RentConfirmRequest struct {
 	Delivery      bool   `json:"delivery"`
 	Address       string `json:"address"`
 	Status        string `json:"status"`
+	Duration      int    `json:"duration"`
 }
 
 func (r *RentConfirmRequest) ToEntities() *domain.RentConfirm {
@@ -15,5 +16,6 @@ func (r *RentConfirmRequest) ToEntities() *domain.RentConfirm {
 		Delivery:      &r.Delivery,
 		Address:       r.Address,
 		Status:        r.Status,
+		Duration:      r.Duration,
 	}
 }

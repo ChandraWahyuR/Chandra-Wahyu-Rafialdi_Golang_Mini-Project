@@ -17,10 +17,12 @@ type RentConfirm struct {
 	Address       string         `json:"address"`
 	AdminId       uuid.UUID      `json:"admin_id"` //pas diconfirm, extrak jwt ambil admin id put ke admin id
 	Status        string         `json:"status"`
+	Duration      int            `json:"duration"`
+	DateStart     time.Time      `json:"date_start"`
 	ReturnTime    time.Time      `json:"return_time"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
-	DeletedAt     gorm.DeletedAt `json:"deleted_at"`
+	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
 func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
@@ -32,6 +34,7 @@ func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 		Address:       conf.Address,
 		AdminId:       conf.AdminId,
 		Status:        conf.Status,
+		Duration:      conf.Duration,
 		CreatedAt:     conf.CreatedAt,
 		UpdatedAt:     conf.UpdatedAt,
 	}
@@ -39,14 +42,15 @@ func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 
 func (conf *RentConfirm) ToRentConfirmUseCase() *domain.RentConfirm {
 	return &domain.RentConfirm{
-		ID:     conf.ID,
-		UserId: conf.UserId,
-		// RentId:        conf.RentId,
+		ID:            conf.ID,
+		UserId:        conf.UserId,
 		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,
 		Address:       conf.Address,
 		AdminId:       conf.AdminId,
 		Status:        conf.Status,
+		Duration:      conf.Duration,
+		ReturnTime:    conf.ReturnTime,
 		CreatedAt:     conf.CreatedAt,
 		UpdatedAt:     conf.UpdatedAt,
 	}
