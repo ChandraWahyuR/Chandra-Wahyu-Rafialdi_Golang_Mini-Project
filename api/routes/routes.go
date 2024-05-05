@@ -17,6 +17,7 @@ type RouteController struct {
 	EquipmentRoute    *equipment.EquipmentController
 	RentRoute         *rent.RentController
 	CategoryEquipment *category.CategoryController
+	// RentConfirm *rent
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -29,16 +30,20 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	// User
 	eAuth.GET("/equipment", r.EquipmentRoute.GetAll)
 	eAuth.GET("/equipment/:id", r.EquipmentRoute.GetById)
+
 	// # rent
 	eAuth.POST("/rent", r.RentRoute.PostRent)
 	eAuth.PUT("/rent/:id", r.RentRoute.UpdateRent)
+
+	// # rent confirm
+	// eAuth.POST()
 
 	// Admin
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
 	eAuth.DELETE("/admin/equipment/:id", r.EquipmentRoute.DeleteEquipment, authorization.OnlyAdmin)
 
 	// Category
-	eAuth.GET("admin/equipment/category", r.CategoryEquipment.GetAll, authorization.OnlyAdmin)
+	eAuth.GET("/equipment/category", r.CategoryEquipment.GetAll)
 	eAuth.POST("/admin/equipment/category", r.CategoryEquipment.PostCategory, authorization.OnlyAdmin)
 	eAuth.DELETE("/admin/equipment/category/:id", r.CategoryEquipment.DeleteCategory, authorization.OnlyAdmin)
 
@@ -46,4 +51,7 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth.GET("/rent", r.RentRoute.GetAll, authorization.OnlyAdmin)
 	eAuth.GET("/rent/:id", r.RentRoute.GetById, authorization.OnlyAdmin)
 	eAuth.DELETE("/rent/:id", r.RentRoute.DeleteRent, authorization.OnlyAdmin)
+
+	// # rent confirm
+
 }

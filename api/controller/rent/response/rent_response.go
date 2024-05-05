@@ -21,7 +21,6 @@ type RentResponse struct {
 }
 
 type EquipmentDetails struct {
-	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Price       int    `json:"price"`
@@ -33,7 +32,6 @@ func FromUseCase(rent *domain.Rent) *RentResponse {
 		UserId:      rent.UserId,
 		EquipmentId: rent.EquipmentId,
 		Equipment: EquipmentDetails{
-			ID:          rent.Equipment.ID,
 			Name:        rent.Equipment.Name,
 			Description: rent.Equipment.Description,
 			Price:       rent.Equipment.Price,
