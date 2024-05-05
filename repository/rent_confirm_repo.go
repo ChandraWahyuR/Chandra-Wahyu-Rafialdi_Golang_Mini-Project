@@ -17,6 +17,13 @@ func NewRentConfirmRepo(db *gorm.DB) *RentConfirmRepo {
 }
 
 func (r *RentConfirmRepo) PostRentConfirm(conf *domain.RentConfirm) error {
+	totalFee := 0
+	for _, rent := range conf.Rents {
+		totalFee += rent.Total
+	}
+
+	conf.Fee = totalFee
+	conf.Status = domain.StatusPending
 	resp := drivers.FromRentConfirmUseCase(conf)
 	if err := r.DB.Create(&resp).Error; err != nil {
 		return err
@@ -57,7 +64,7 @@ func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domai
 	return resp.ToRentConfirmUseCase(), nil
 }
 
-func (r *RentConfirmRepo) DeleteRent(id int) error {
+func (r *RentConfirmRepo) DeleteRentConfirm(id int) error {
 	db := &drivers.RentConfirm{}
 	if err := r.DB.Where("id = ?", id).Delete(&db).Error; err != nil {
 		return err

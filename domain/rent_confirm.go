@@ -14,10 +14,10 @@ const (
 )
 
 type RentConfirm struct {
-	ID            int
-	UserId        uuid.UUID
-	RentId        int
-	Rent          Rent
+	ID     int
+	UserId uuid.UUID
+	// RentId        int
+	Rents         []*Rent
 	Fee           int
 	PaymentMethod string
 	Delivery      *bool
@@ -39,9 +39,9 @@ type RentConfirmRepositoryInterface interface {
 }
 
 type RentConfirmUseCaseInterface interface {
-	PostRent(*RentConfirm) (RentConfirm, error)                   //users
+	PostRentConfirm(*RentConfirm) (RentConfirm, error)            //users
 	GetAll() ([]*RentConfirm, error)                              //admin
 	GetById(ID int) (*RentConfirm, error)                         //admin
 	ConfirmAdmin(ID int, rent *RentConfirm) (*RentConfirm, error) //admin
-	DeleteRent(ID int) error                                      //admin
+	DeleteRentConfirm(ID int) error                               //admin
 }

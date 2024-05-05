@@ -4,6 +4,8 @@ import (
 	"prototype/api/controller/equipment"
 	"prototype/api/controller/equipment/category"
 	"prototype/api/controller/rent"
+
+	rentconfirm "prototype/api/controller/rent_confirm"
 	user "prototype/api/controller/user"
 	"prototype/api/middleware/authorization"
 	"prototype/constant"
@@ -17,7 +19,7 @@ type RouteController struct {
 	EquipmentRoute    *equipment.EquipmentController
 	RentRoute         *rent.RentController
 	CategoryEquipment *category.CategoryController
-	// RentConfirm *rent
+	RentConfirm       *rentconfirm.RentConfirmController
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -34,9 +36,10 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	// # rent
 	eAuth.POST("/rent", r.RentRoute.PostRent)
 	eAuth.PUT("/rent/:id", r.RentRoute.UpdateRent)
+	eAuth.GET("/rent/user/:id", r.RentRoute.GetByUserID)
 
 	// # rent confirm
-	// eAuth.POST()
+	eAuth.POST("/confirm", r.RentConfirm.PostRentConfirm)
 
 	// Admin
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
