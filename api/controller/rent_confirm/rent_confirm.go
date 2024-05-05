@@ -6,6 +6,7 @@ import (
 	"prototype/api/controller/rent_confirm/response"
 	md "prototype/api/middleware"
 	"prototype/domain"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,6 +35,7 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 
 	confirmData := domain.RentConfirm{
 		UserId:        userID,
+		Duration:      conf.Duration,
 		PaymentMethod: conf.PaymentMethod,
 		Delivery:      &conf.Delivery,
 		Address:       conf.Address,
@@ -46,11 +48,36 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
 	}
 
-	// Mengonversi rent confirm yang berhasil ke dalam bentuk response
 	rentResponse := response.FromUseCase(&confirmedRent)
-
-	// Mengembalikan data rent confirm yang telah di-confirm
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", rentResponse))
+}
+
+func (uc *RentConfirmController) GetById(c echo.Context) error {
+	confirmId := c.Param("id")
+	id, err := strconv.Atoi(confirmId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+	}
+
+	rent, err := uc.rentconfirmUseCase.GetById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+	}
+	resp, err := uc.rentconfirmUseCase.PostRentConfirm(rent)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", resp))
+}
+
+func (uc *RentConfirmController) GetAll(c echo.Context) error {
+	res, err := uc.rentconfirmUseCase.GetAll()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	responseList := make([]*response.RentConfirmRespond, 0)
+	for _, resp := range res {
+		responseList = append(responseList, response.FromUseCase(resp))
+	}
+	return c.JSON(http.StatusOK, responseList)
 }
 
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface) *RentConfirmController {

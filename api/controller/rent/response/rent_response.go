@@ -2,7 +2,6 @@ package response
 
 import (
 	"prototype/domain"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -16,8 +15,6 @@ type RentResponse struct {
 	Equipment   EquipmentDetails `json:"equipment"`
 	Quantity    int              `json:"quantity"`
 	Total       int              `json:"total"`
-	DateStart   time.Time        `json:"date_start"`
-	Duration    int              `json:"duration"`
 }
 
 type EquipmentDetails struct {
@@ -36,9 +33,7 @@ func FromUseCase(rent *domain.Rent) *RentResponse {
 			Description: rent.Equipment.Description,
 			Price:       rent.Equipment.Price,
 		},
-		Quantity:  rent.Quantity,
-		Total:     rent.Total,
-		DateStart: rent.DateStart,
-		Duration:  rent.Duration,
+		Quantity: rent.Quantity,
+		Total:    rent.Total,
 	}
 }

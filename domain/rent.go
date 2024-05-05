@@ -8,16 +8,15 @@ import (
 )
 
 type Rent struct {
-	ID          int
-	UserId      uuid.UUID
-	EquipmentId int
-	Equipment   Equipment
-	Quantity    int
-	Total       int
-	DateStart   time.Time
-	UpdatedAt   time.Time
-	Duration    int
-	DeletedAt   gorm.DeletedAt
+	ID            int
+	UserId        uuid.UUID
+	RentConfirmID int
+	EquipmentId   int
+	Equipment     Equipment
+	Quantity      int
+	Total         int
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt
 }
 
 type RentRepositoryInterface interface {
