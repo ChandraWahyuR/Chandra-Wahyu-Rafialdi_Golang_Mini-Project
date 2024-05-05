@@ -39,7 +39,7 @@ func ConnectDB(con Config) *gorm.DB {
 }
 
 func MigrationUser(db *gorm.DB) {
-	db.AutoMigrate(&User{}, &Equipment{}, &Rent{}, &CategoryEquipment{})
+	db.AutoMigrate(&User{}, &Equipment{}, &Rent{}, &CategoryEquipment{}, &RentConfirm{})
 }
 
 func createDatabase(db *gorm.DB, dbname string) error {
