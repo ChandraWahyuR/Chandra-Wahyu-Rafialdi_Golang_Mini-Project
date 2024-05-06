@@ -33,13 +33,14 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User id from rent not found"})
 	}
 
+	status := domain.StatusPending
 	confirmData := domain.RentConfirm{
 		UserId:        userID,
 		Duration:      conf.Duration,
 		PaymentMethod: conf.PaymentMethod,
 		Delivery:      &conf.Delivery,
 		Address:       conf.Address,
-		Status:        conf.Status,
+		Status:        status,
 		Rents:         rents,
 	}
 

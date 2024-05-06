@@ -8,6 +8,12 @@ type RentConfirmRequest struct {
 	Address       string `json:"address"`
 	Status        string `json:"status"`
 	Duration      int    `json:"duration"`
+	// Rents         []*EquipmentRequest `json:"rents"`
+}
+
+type EquipmentRequest struct {
+	EquipmentID int `json:"equipment_id"`
+	Total       int `json:"total"`
 }
 
 func (r *RentConfirmRequest) ToEntities() *domain.RentConfirm {
@@ -17,5 +23,6 @@ func (r *RentConfirmRequest) ToEntities() *domain.RentConfirm {
 		Address:       r.Address,
 		Status:        r.Status,
 		Duration:      r.Duration,
+		// Rents:         []*domain.Rent{},
 	}
 }

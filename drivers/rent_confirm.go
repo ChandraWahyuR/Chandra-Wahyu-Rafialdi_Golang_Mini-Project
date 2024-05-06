@@ -23,6 +23,16 @@ type RentConfirm struct {
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	Rents         []*RentDetail  `gorm:"foreignKey:RentConfirmID"`
+}
+
+type RentDetail struct {
+	ID            int
+	UserId        uuid.UUID
+	RentConfirmID int
+	EquipmentId   int
+	Quantity      int
+	Total         int
 }
 
 func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {

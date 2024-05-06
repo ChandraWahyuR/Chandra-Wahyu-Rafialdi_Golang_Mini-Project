@@ -28,33 +28,26 @@ type RentDetails struct {
 }
 
 func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
-	var returnTime *time.Time
-	if !conf.ReturnTime.IsZero() {
-		returnTime = &conf.ReturnTime
-	}
-	totalFee := 0
-	rent := make([]RentDetails, len(conf.Rents))
-	for i, r := range conf.Rents {
-		rent[i] = RentDetails{
-			EquipmentId: r.EquipmentId,
-			Total:       r.Total,
+	rentDetails := make([]RentDetails, len(conf.Rents))
+	for i, rent := range conf.Rents {
+		rentDetails[i] = RentDetails{
+			EquipmentId: rent.EquipmentId,
+			Total:       rent.Total,
 		}
-		totalFee += r.Total * conf.Duration
 	}
-	conf.Status = domain.StatusPending
 
 	return &RentConfirmRespond{
 		ID:            conf.ID,
 		UserId:        conf.UserId,
-		Rent:          rent,
+		Rent:          rentDetails, // Isi slice rent dengan rentDetails
 		Duration:      conf.Duration,
-		Fee:           totalFee,
+		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,
 		Delivery:      *conf.Delivery,
 		Address:       conf.Address,
 		AdminId:       conf.AdminId,
 		Status:        conf.Status,
 		DateStart:     conf.DateStart,
-		ReturnTime:    returnTime,
+		ReturnTime:    &conf.ReturnTime,
 	}
 }
