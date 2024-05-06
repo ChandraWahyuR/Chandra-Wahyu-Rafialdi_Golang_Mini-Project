@@ -23,16 +23,8 @@ type RentConfirm struct {
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
-	Rents         []*RentDetail  `gorm:"foreignKey:RentConfirmID"`
-}
-
-type RentDetail struct {
-	ID            int
-	UserId        uuid.UUID
-	RentConfirmID int
-	EquipmentId   int
-	Quantity      int
-	Total         int
+	// Fk disini, bukan di domain
+	Rents []domain.Rent `gorm:"foreignKey:RentConfirmID;"`
 }
 
 func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
@@ -47,6 +39,7 @@ func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 		Duration:      conf.Duration,
 		CreatedAt:     conf.CreatedAt,
 		UpdatedAt:     conf.UpdatedAt,
+		Rents:         conf.Rents,
 	}
 }
 
@@ -63,5 +56,6 @@ func (conf *RentConfirm) ToRentConfirmUseCase() *domain.RentConfirm {
 		ReturnTime:    conf.ReturnTime,
 		CreatedAt:     conf.CreatedAt,
 		UpdatedAt:     conf.UpdatedAt,
+		Rents:         conf.Rents,
 	}
 }
