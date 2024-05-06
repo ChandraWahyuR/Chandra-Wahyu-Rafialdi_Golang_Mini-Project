@@ -19,7 +19,7 @@ type RentConfirmRespond struct {
 	AdminId       uuid.UUID     `json:"admin_id"`
 	Status        string        `json:"status"`
 	DateStart     time.Time     `json:"date_start"`
-	ReturnTime    *time.Time    `json:"return_time"` // ini awal user kirim kosong, nanti pas admin confirm baru isi
+	ReturnTime    time.Time     `json:"return_time"` // ini awal user kirim kosong, nanti pas admin confirm baru isi
 }
 
 type RentDetails struct {
@@ -36,6 +36,11 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		}
 	}
 
+	var delivery bool
+	if conf.Delivery != nil {
+		delivery = *conf.Delivery
+	}
+
 	return &RentConfirmRespond{
 		ID:            conf.ID,
 		UserId:        conf.UserId,
@@ -43,11 +48,11 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		Duration:      conf.Duration,
 		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,
-		Delivery:      *conf.Delivery,
+		Delivery:      delivery,
 		Address:       conf.Address,
 		AdminId:       conf.AdminId,
 		Status:        conf.Status,
 		DateStart:     conf.DateStart,
-		ReturnTime:    &conf.ReturnTime,
+		ReturnTime:    conf.ReturnTime,
 	}
 }

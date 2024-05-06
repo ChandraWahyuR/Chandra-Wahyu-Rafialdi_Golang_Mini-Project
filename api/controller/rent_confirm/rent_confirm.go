@@ -28,7 +28,7 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	// Mendapatkan data rent dari user berdasarkan userID
+	//
 	rents, err := uc.rentUseCase.GetUserID(userID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User id from rent not found"})
@@ -48,12 +48,10 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		Rents:         convertedRents,
 	}
 
-	// Mengonversi slice []*domain.Rent menjadi []domain.Rent
 	for i, rent := range rents {
 		confirmData.Rents[i] = *rent
 	}
 
-	// Menyimpan rent_confirm
 	confirmedRent, err := uc.rentconfirmUseCase.PostRentConfirm(&confirmData)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
@@ -74,8 +72,8 @@ func (uc *RentConfirmController) GetById(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
-
-	return c.JSON(http.StatusOK, rentConfirm)
+	rentConfirmResponse := response.FromUseCase(rentConfirm)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", rentConfirmResponse))
 }
 
 func (uc *RentConfirmController) GetAll(c echo.Context) error {
@@ -88,7 +86,7 @@ func (uc *RentConfirmController) GetAll(c echo.Context) error {
 	for _, respond := range res {
 		respon = append(respon, response.FromUseCase(respond))
 	}
-	return c.JSON(http.StatusOK, respon)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", respon))
 }
 
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface) *RentConfirmController {

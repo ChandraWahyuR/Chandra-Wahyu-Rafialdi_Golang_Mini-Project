@@ -37,7 +37,7 @@ func (r *EquipmentRepo) GetAll() ([]*domain.Equipment, error) {
 
 func (r *EquipmentRepo) GetById(id int) (*domain.Equipment, error) {
 	db := &drivers.Equipment{}
-	if err := r.DB.First(db, id).Error; err != nil {
+	if err := r.DB.Preload("Category").First(db, id).Error; err != nil {
 		return nil, err
 	}
 	return db.ToEquipmentUseCase(), nil

@@ -36,12 +36,12 @@ func (r *RentConfirmRepo) GetAll() ([]*domain.RentConfirm, error) {
 	return rentConfirms, nil
 }
 func (r *RentConfirmRepo) GetById(id int) (*domain.RentConfirm, error) {
-	rentConfirm := &domain.RentConfirm{}
-	if err := r.DB.Preload("Rents").First(rentConfirm, id).Error; err != nil {
+	db := &drivers.RentConfirm{}
+	if err := r.DB.Preload("Rents").First(db, id).Error; err != nil {
 		return nil, err
 	}
 
-	return rentConfirm, nil
+	return db.ToRentConfirmUseCase(), nil
 }
 
 func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domain.RentConfirm, error) {
