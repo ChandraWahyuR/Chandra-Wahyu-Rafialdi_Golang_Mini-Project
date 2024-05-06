@@ -28,7 +28,7 @@ func (r *RentConfirmRepo) PostRentConfirm(conf *domain.RentConfirm) error {
 
 func (r *RentConfirmRepo) GetAll() ([]*domain.RentConfirm, error) {
 	var conf []*domain.RentConfirm
-	status := domain.StatusPending
+	status := "Pending"
 	if err := r.DB.Where("status = ?", status).Find(&conf).Error; err != nil {
 		return nil, err
 	}

@@ -26,6 +26,13 @@ func (u *RentConfirmUseCase) PostRentConfirm(conf *domain.RentConfirm) (domain.R
 		}
 	}
 
+	totalFee := 0
+	for _, rent := range conf.Rents {
+		totalFee += rent.Total
+	}
+	totalFee *= conf.Duration
+	conf.Fee = totalFee
+
 	err := u.repository.PostRentConfirm(conf)
 	if err != nil {
 		return domain.RentConfirm{}, constant.ErrInsertDatabase
