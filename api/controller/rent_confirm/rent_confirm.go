@@ -28,11 +28,15 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
+	// Mendapatkan data rent dari user berdasarkan userID
 	rents, err := uc.rentUseCase.GetUserID(userID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User id from rent not found"})
 	}
-
+	var convertedRents []domain.Rent
+	for _, rent := range rents {
+		convertedRents = append(convertedRents, *rent)
+	}
 	status := domain.StatusPending
 	confirmData := domain.RentConfirm{
 		UserId:        userID,
@@ -41,9 +45,15 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		Delivery:      &conf.Delivery,
 		Address:       conf.Address,
 		Status:        status,
-		Rents:         rents,
+		Rents:         convertedRents,
 	}
 
+	// Mengonversi slice []*domain.Rent menjadi []domain.Rent
+	for i, rent := range rents {
+		confirmData.Rents[i] = *rent
+	}
+
+	// Menyimpan rent_confirm
 	confirmedRent, err := uc.rentconfirmUseCase.PostRentConfirm(&confirmData)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
@@ -57,15 +67,15 @@ func (uc *RentConfirmController) GetById(c echo.Context) error {
 	confirmId := c.Param("id")
 	id, err := strconv.Atoi(confirmId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "id not found"})
 	}
 
-	rent, err := uc.rentconfirmUseCase.GetById(id)
+	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
-	resp, err := uc.rentconfirmUseCase.PostRentConfirm(rent)
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", resp))
+
+	return c.JSON(http.StatusOK, rentConfirm)
 }
 
 func (uc *RentConfirmController) GetAll(c echo.Context) error {
@@ -74,11 +84,11 @@ func (uc *RentConfirmController) GetAll(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	responseList := make([]*response.RentConfirmRespond, 0)
-	for _, resp := range res {
-		responseList = append(responseList, response.FromUseCase(resp))
+	respon := make([]*response.RentConfirmRespond, 0)
+	for _, respond := range res {
+		respon = append(respon, response.FromUseCase(respond))
 	}
-	return c.JSON(http.StatusOK, responseList)
+	return c.JSON(http.StatusOK, respon)
 }
 
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface) *RentConfirmController {

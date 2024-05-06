@@ -9,15 +9,15 @@ import (
 )
 
 type Rent struct {
-	ID     int
-	UserId uuid.UUID
-	// RentConfirmID int
-	EquipmentId int
-	Equipment   Equipment
-	Quantity    int
-	Total       int
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt
+	ID            int
+	UserId        uuid.UUID
+	RentConfirmID int `gorm:"many2many:rent_confirm_rents;"`
+	EquipmentId   int
+	Equipment     Equipment
+	Quantity      int
+	Total         int
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
 }
 
 func FromRentUseCase(rent *domain.Rent) *Rent {

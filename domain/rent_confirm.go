@@ -13,10 +13,11 @@ const (
 	StatusReject  = "Reject"
 )
 
+// `gorm:"many2many:rent_confirm_rents;"`
 type RentConfirm struct {
 	ID            int
 	UserId        uuid.UUID
-	Rents         []*Rent `gorm:"foreignKey:RentConfirmID"` //Fk with table rent rentconfirmId
+	Rents         []Rent `gorm:"many2many:rent_confirm_rents;"` //Fk with table rent rentconfirmId
 	Fee           int
 	PaymentMethod string
 	Delivery      *bool

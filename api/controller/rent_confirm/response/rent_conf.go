@@ -39,7 +39,7 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 	return &RentConfirmRespond{
 		ID:            conf.ID,
 		UserId:        conf.UserId,
-		Rent:          rentDetails, // Isi slice rent dengan rentDetails
+		Rent:          rentDetails,
 		Duration:      conf.Duration,
 		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,

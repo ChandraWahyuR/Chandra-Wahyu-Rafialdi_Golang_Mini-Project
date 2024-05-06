@@ -27,37 +27,21 @@ func (r *RentConfirmRepo) PostRentConfirm(conf *domain.RentConfirm) error {
 }
 
 func (r *RentConfirmRepo) GetAll() ([]*domain.RentConfirm, error) {
-	var conf []*domain.RentConfirm
+	var rentConfirms []*domain.RentConfirm
 	status := "Pending"
-	if err := r.DB.Where("status = ?", status).Find(&conf).Error; err != nil {
+	if err := r.DB.Preload("Rents").Where("status = ?", status).Find(&rentConfirms).Error; err != nil {
 		return nil, err
 	}
 
-	for _, c := range conf {
-		rents, err := r.getRentsByConfirmID(c.ID)
-		if err != nil {
-			return nil, err
-		}
-		c.Rents = rents
-	}
-
-	return conf, nil
+	return rentConfirms, nil
 }
-
-func (r *RentConfirmRepo) getRentsByConfirmID(confirmID int) ([]*domain.Rent, error) {
-	var rents []*domain.Rent
-	if err := r.DB.Where("rent_confirm_id = ?", confirmID).Find(&rents).Error; err != nil {
-		return nil, err
-	}
-	return rents, nil
-}
-
 func (r *RentConfirmRepo) GetById(id int) (*domain.RentConfirm, error) {
-	db := &drivers.RentConfirm{}
-	if err := r.DB.First(db, id).Error; err != nil {
+	rentConfirm := &domain.RentConfirm{}
+	if err := r.DB.Preload("Rents").First(rentConfirm, id).Error; err != nil {
 		return nil, err
 	}
-	return db.ToRentConfirmUseCase(), nil
+
+	return rentConfirm, nil
 }
 
 func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domain.RentConfirm, error) {
