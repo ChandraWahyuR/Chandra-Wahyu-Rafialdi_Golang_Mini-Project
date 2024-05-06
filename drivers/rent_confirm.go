@@ -23,7 +23,7 @@ type RentConfirm struct {
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
-	// Fk disini, bukan di domain
+	// Fk disini, bukan di domain, tapi kalau mau buat table gorm many tomany disini
 	Rents []domain.Rent `gorm:"foreignKey:RentConfirmID;"`
 }
 

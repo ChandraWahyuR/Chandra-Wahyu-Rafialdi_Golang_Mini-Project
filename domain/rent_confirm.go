@@ -17,7 +17,7 @@ const (
 type RentConfirm struct {
 	ID            int
 	UserId        uuid.UUID
-	Rents         []Rent `gorm:"many2many:rent_confirm_rents;"` //Fk with table rent rentconfirmId
+	Rents         []Rent `gorm:"foreignKey:RentConfirmID;"`
 	Fee           int
 	PaymentMethod string
 	Delivery      *bool
