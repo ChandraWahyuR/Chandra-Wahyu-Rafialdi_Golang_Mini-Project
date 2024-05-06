@@ -147,8 +147,12 @@ func (uc *RentController) GetByUserID(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch rent data"})
 	}
+	rentResponses := make([]*response.RentResponse, len(rents))
 
-	return c.JSON(http.StatusOK, rents)
+	for i, rent := range rents {
+		rentResponses[i] = response.FromUseCase(rent)
+	}
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", rentResponses))
 }
 
 func NewRentController(rentusecase domain.RentUseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentController {

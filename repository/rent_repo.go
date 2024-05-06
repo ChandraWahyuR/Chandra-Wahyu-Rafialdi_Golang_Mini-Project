@@ -72,9 +72,15 @@ func (r *RentRepo) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error) {
 }
 
 func (r *RentRepo) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
-	var rents []*domain.Rent
-	if err := r.DB.Where("user_id = ?", userID).Find(&rents).Error; err != nil {
+	var db []*drivers.Rent
+	if err := r.DB.Preload("Equipment").Where("user_id = ?", userID).Find(&db).Error; err != nil {
 		return nil, err
 	}
+
+	rents := make([]*domain.Rent, len(db))
+	for i, rent := range db {
+		rents[i] = rent.ToRentUseCase()
+	}
+
 	return rents, nil
 }

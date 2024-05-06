@@ -99,6 +99,10 @@ func (uc *EquipmentController) GetById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
 	equipmentResponse := response.FromUseCase(equipment)
+
+	equipmentResponses := make([]*response.EquipmentResponse, 0)
+	equipmentResponses = append(equipmentResponses, response.FromUseCase(equipment))
+
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", equipmentResponse))
 }
 

@@ -45,5 +45,8 @@ func (eq *Equipment) ToEquipmentUseCase() *domain.Equipment {
 		Price:       eq.Price,
 		CreatedAt:   eq.CreatedAt,
 		UpdatedAt:   eq.UpdatedAt,
+		Category: domain.CategoryEquipment{
+			Name: eq.Category.Name,
+		},
 	}
 }
