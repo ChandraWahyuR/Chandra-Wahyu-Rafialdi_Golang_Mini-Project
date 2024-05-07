@@ -38,6 +38,9 @@ type RentConfirmRepositoryInterface interface {
 	GetById(ID int) (*RentConfirm, error)
 	ConfirmAdmin(ID int, conf *RentConfirm) (*RentConfirm, error)
 	DeleteRentConfirm(ID int) error
+
+	// New
+	FindRentConfirmByUserId(userId uuid.UUID) ([]*RentConfirm, error)
 }
 
 type RentConfirmUseCaseInterface interface {
@@ -46,4 +49,7 @@ type RentConfirmUseCaseInterface interface {
 	GetById(ID int) (*RentConfirm, error)
 	ConfirmAdmin(ID int, rent *RentConfirm) (*RentConfirm, error)
 	DeleteRentConfirm(ID int) error
+
+	// New
+	FindRentConfirmByUserId(userId uuid.UUID) ([]*RentConfirm, error)
 }

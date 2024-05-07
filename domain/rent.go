@@ -27,6 +27,9 @@ type RentRepositoryInterface interface {
 	DeleteRent(ID int) error
 
 	GetUserID(userID uuid.UUID) ([]*Rent, error)
+
+	// New Feature
+	GetUnconfirmedRents(userID uuid.UUID) ([]*Rent, error)
 }
 
 type RentUseCaseInterface interface {
@@ -37,4 +40,7 @@ type RentUseCaseInterface interface {
 	DeleteRent(ID int) error
 
 	GetUserID(userID uuid.UUID) ([]*Rent, error)
+
+	// New Feature
+	GetUnconfirmedRents(userID uuid.UUID) ([]*Rent, error)
 }
