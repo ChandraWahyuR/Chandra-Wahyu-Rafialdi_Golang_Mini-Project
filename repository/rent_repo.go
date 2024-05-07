@@ -58,7 +58,7 @@ func (r *RentRepo) DeleteRent(id int) error {
 
 func (r *RentRepo) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error) {
 	db := &drivers.Rent{}
-	if err := r.DB.Where("id = ?", id).First(&db).Error; err != nil {
+	if err := r.DB.Where("id = ? AND rent_confirm_id = ?", id, 0).First(&db).Error; err != nil {
 		return nil, err
 	}
 

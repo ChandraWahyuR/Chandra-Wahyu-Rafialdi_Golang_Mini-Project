@@ -61,12 +61,14 @@ func (u *RentUseCase) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error
 	if rent.Quantity == 0 {
 		return nil, constant.ErrEmptyInput
 	}
-
 	existingRent, err := u.repository.GetById(id)
 	if err != nil {
 		return nil, constant.ErrInsertDatabase
 	}
 
+	if existingRent.RentConfirmID != 0 {
+		return nil, constant.ErrUpdateData
+	}
 	// if data is exist, data can be updated
 	existingRent.Quantity = rent.Quantity
 	existingRent.Total = rent.Total

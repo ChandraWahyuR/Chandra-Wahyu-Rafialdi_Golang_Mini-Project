@@ -28,7 +28,7 @@ func (uc *RentController) GetAll(c echo.Context) error {
 	for _, respond := range res {
 		respon = append(respon, response.FromUseCase(respond))
 	}
-	return c.JSON(http.StatusOK, respon)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessGetData, respon))
 }
 
 func (uc *RentController) PostRent(c echo.Context) error {
@@ -66,7 +66,7 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	}
 
 	response := response.FromUseCase(&resp)
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", response))
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessInsert, response))
 }
 
 func (uc *RentController) DeleteRent(c echo.Context) error {
@@ -77,7 +77,7 @@ func (uc *RentController) DeleteRent(c echo.Context) error {
 	}
 	rent := uc.rentusecase.DeleteRent(id)
 
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Delete Sucsess", rent))
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessDelete, rent))
 }
 
 func (uc *RentController) GetById(c echo.Context) error {
@@ -92,7 +92,7 @@ func (uc *RentController) GetById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
 	}
 	resp, err := uc.rentusecase.PostRent(rent)
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", resp))
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessGetData, resp))
 }
 
 func (uc *RentController) UpdateRent(c echo.Context) error {
@@ -116,6 +116,11 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to fetch rent data"})
 	}
 
+	// Check if rent is confirmed, if yes then it cannot be updated again
+	if rentToUpdate.RentConfirmID != 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Data cannot be updated"})
+	}
+
 	equipment, err := uc.equipmentusecase.GetById(rentToUpdate.EquipmentId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
@@ -130,10 +135,10 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 
 	updateRent, err := uc.rentusecase.UpdateRent(id, &rentData)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, constant.ErrUpdateData)
 	}
 	respon := response.FromUseCase(updateRent)
-	return c.JSON(http.StatusOK, respon)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, respon))
 }
 
 func (uc *RentController) GetByUserID(c echo.Context) error {
@@ -153,7 +158,7 @@ func (uc *RentController) GetByUserID(c echo.Context) error {
 	for i, rent := range rents {
 		rentResponses[i] = response.FromUseCase(rent)
 	}
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", rentResponses))
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessInsert, rentResponses))
 }
 
 func NewRentController(rentusecase domain.RentUseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentController {
