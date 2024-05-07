@@ -5,11 +5,11 @@ import (
 	"prototype/api/controller/rent/request"
 	"prototype/api/controller/rent/response"
 	md "prototype/api/middleware"
+	"prototype/constant"
 	"prototype/domain"
 	"prototype/utils"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -137,18 +137,19 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 }
 
 func (uc *RentController) GetByUserID(c echo.Context) error {
-	userID := c.Param("id")
-	parsedUserID, err := uuid.Parse(userID)
+	token := c.Request().Header.Get("Authorization")
+
+	userID, _, _, err := md.ExtractToken(token)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user_id format"})
+		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrById.Error()))
 	}
 
-	rents, err := uc.rentusecase.GetUserID(parsedUserID)
+	rents, err := uc.rentusecase.GetUserID(userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch rent data"})
+		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrFindData.Error()))
 	}
+
 	rentResponses := make([]*response.RentResponse, len(rents))
-
 	for i, rent := range rents {
 		rentResponses[i] = response.FromUseCase(rent)
 	}

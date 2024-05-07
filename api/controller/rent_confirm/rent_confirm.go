@@ -5,6 +5,7 @@ import (
 	"prototype/api/controller/rent_confirm/request"
 	"prototype/api/controller/rent_confirm/response"
 	md "prototype/api/middleware"
+	"prototype/constant"
 	"prototype/domain"
 	"strconv"
 
@@ -108,25 +109,23 @@ func (uc *RentConfirmController) GetAll(c echo.Context) error {
 func (uc *RentConfirmController) FindRentConfirmByUserId(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 
-	// Ekstrak userID dari token JWT
+	// Ekstract userID from JWT
 	userID, _, _, err := md.ExtractToken(token)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to extract user ID from token"})
+		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrById.Error()))
 	}
 
-	// Memanggil use case untuk mencari rent confirm berdasarkan userID
 	rentConfirms, err := uc.rentconfirmUseCase.FindRentConfirmByUserId(userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch rent data"})
+		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrFindData.Error()))
 	}
 
-	// Mengonversi data rent confirm menjadi rent confirm response
+	// Conversi Data rent confirm to rent confirm response
 	rentResponses := make([]*response.RentConfirmRespond, len(rentConfirms))
 	for i, rent := range rentConfirms {
 		rentResponses[i] = response.FromUseCase(rent)
 	}
 
-	// Mengembalikan data rent confirm response
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", rentResponses))
 }
 
