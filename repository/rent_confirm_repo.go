@@ -5,6 +5,7 @@ import (
 	"prototype/drivers"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +22,10 @@ func (r *RentConfirmRepo) PostRentConfirm(conf *domain.RentConfirm) error {
 	if err := r.DB.Create(&resp).Error; err != nil {
 		return err
 	}
+	// query := r.DB.Table("rents").Where("user_id = ?", resp.UserId).Update("delete_at", time.Now())
+	// user_id dan deleted_at != null
 
+	// Bagian confrim hapus, atau dideleted at
 	conf.ID = resp.ID
 	return nil
 }
@@ -68,4 +72,19 @@ func (r *RentConfirmRepo) DeleteRentConfirm(id int) error {
 		return err
 	}
 	return nil
+}
+
+// New Feature
+// Get Confirmation about ren By User ID
+func (r *RentConfirmRepo) FindRentConfirmByUserId(id uuid.UUID) ([]*domain.RentConfirm, error) {
+	var db []*drivers.RentConfirm
+	if err := r.DB.Preload("Rents").Where("user_id = ?", id).Find(&db).Error; err != nil {
+		return nil, err
+	}
+
+	conf := make([]*domain.RentConfirm, len(db))
+	for i, value := range db {
+		conf[i] = value.ToRentConfirmUseCase()
+	}
+	return conf, nil
 }

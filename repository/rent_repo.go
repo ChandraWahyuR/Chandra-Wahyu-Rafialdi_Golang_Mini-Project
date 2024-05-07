@@ -84,3 +84,12 @@ func (r *RentRepo) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
 
 	return rents, nil
 }
+
+// New Feature
+func (r *RentRepo) GetUnconfirmedRents(userID uuid.UUID) ([]*domain.Rent, error) {
+	var rents []*domain.Rent
+	if err := r.DB.Where("user_id = ? AND rent_confirm_id = ?", userID, 0).Find(&rents).Error; err != nil {
+		return nil, err
+	}
+	return rents, nil
+}

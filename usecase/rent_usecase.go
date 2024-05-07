@@ -85,3 +85,11 @@ func (u *RentUseCase) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
 	}
 	return rents, nil
 }
+
+func (u *RentUseCase) GetUnconfirmedRents(userID uuid.UUID) ([]*domain.Rent, error) {
+	rents, err := u.repository.GetUnconfirmedRents(userID)
+	if err != nil {
+		return nil, err
+	}
+	return rents, nil
+}

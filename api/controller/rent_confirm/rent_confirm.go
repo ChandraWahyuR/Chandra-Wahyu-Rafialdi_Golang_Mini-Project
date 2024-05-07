@@ -28,15 +28,28 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
-	//
-	rents, err := uc.rentUseCase.GetUserID(userID)
+	// Check if delivery is true
+	if conf.Delivery != false && *&conf.Delivery == true {
+		if conf.Address == "" {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Address is required for delivery"})
+		}
+	}
+	// Took Rent data that need to be confirmed
+	rents, err := uc.rentUseCase.GetUnconfirmedRents(userID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User id from rent not found"})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to get unconfirmed rents"})
 	}
-	var convertedRents []domain.Rent
-	for _, rent := range rents {
-		convertedRents = append(convertedRents, *rent)
+
+	// Check if data rent is avaible
+	if len(rents) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Error, rent data not found"})
 	}
+
+	rentsData := make([]domain.Rent, len(rents))
+	for i, rent := range rents {
+		rentsData[i] = *rent
+	}
+
 	status := domain.StatusPending
 	confirmData := domain.RentConfirm{
 		UserId:        userID,
@@ -45,7 +58,7 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		Delivery:      &conf.Delivery,
 		Address:       conf.Address,
 		Status:        status,
-		Rents:         convertedRents,
+		Rents:         rentsData,
 	}
 
 	for i, rent := range rents {
@@ -87,6 +100,34 @@ func (uc *RentConfirmController) GetAll(c echo.Context) error {
 		respon = append(respon, response.FromUseCase(respond))
 	}
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", respon))
+}
+
+// New Feature
+// Get User Rents Confirmation by User id
+
+func (uc *RentConfirmController) FindRentConfirmByUserId(c echo.Context) error {
+	token := c.Request().Header.Get("Authorization")
+
+	// Ekstrak userID dari token JWT
+	userID, _, _, err := md.ExtractToken(token)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to extract user ID from token"})
+	}
+
+	// Memanggil use case untuk mencari rent confirm berdasarkan userID
+	rentConfirms, err := uc.rentconfirmUseCase.FindRentConfirmByUserId(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch rent data"})
+	}
+
+	// Mengonversi data rent confirm menjadi rent confirm response
+	rentResponses := make([]*response.RentConfirmRespond, len(rentConfirms))
+	for i, rent := range rentConfirms {
+		rentResponses[i] = response.FromUseCase(rent)
+	}
+
+	// Mengembalikan data rent confirm response
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", rentResponses))
 }
 
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface) *RentConfirmController {

@@ -3,6 +3,8 @@ package usecase
 import (
 	"prototype/constant"
 	"prototype/domain"
+
+	"github.com/google/uuid"
 )
 
 type RentConfirmUseCase struct {
@@ -84,4 +86,14 @@ func (u *RentConfirmUseCase) DeleteRentConfirm(id int) error {
 	}
 
 	return nil
+}
+
+// New Feature
+func (u *RentConfirmUseCase) FindRentConfirmByUserId(userId uuid.UUID) ([]*domain.RentConfirm, error) {
+	rentConfirms, err := u.repository.FindRentConfirmByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return rentConfirms, nil
 }

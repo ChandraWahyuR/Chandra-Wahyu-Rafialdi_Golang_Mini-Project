@@ -29,7 +29,7 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth := e.Group("")
 	eAuth.Use(echojwt.JWT([]byte(constant.PrivateKeyJWT())))
 
-	// User
+	// ================================ User ================================
 	eAuth.GET("/equipment", r.EquipmentRoute.GetAll)
 	eAuth.GET("/equipment/:id", r.EquipmentRoute.GetById)
 
@@ -40,10 +40,10 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 
 	// # rent confirm
 	eAuth.POST("/confirm", r.RentConfirm.PostRentConfirm)
-	eAuth.GET("/confirm", r.RentConfirm.GetAll)
 	eAuth.GET("/confirm/:id", r.RentConfirm.GetById)
+	eAuth.GET("/confirm/user", r.RentConfirm.FindRentConfirmByUserId)
 
-	// Admin
+	// ================================ Admin ================================
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
 	eAuth.DELETE("/admin/equipment/:id", r.EquipmentRoute.DeleteEquipment, authorization.OnlyAdmin)
 
@@ -58,5 +58,5 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth.DELETE("/rent/:id", r.RentRoute.DeleteRent, authorization.OnlyAdmin)
 
 	// # rent confirm
-
+	eAuth.GET("/confirm", r.RentConfirm.GetAll)
 }
