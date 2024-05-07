@@ -92,8 +92,10 @@ func (u *RentConfirmUseCase) DeleteRentConfirm(id int) error {
 func (u *RentConfirmUseCase) FindRentConfirmByUserId(userId uuid.UUID) ([]*domain.RentConfirm, error) {
 	rentConfirms, err := u.repository.FindRentConfirmByUserId(userId)
 	if err != nil {
-		return nil, err
+		return nil, constant.ErrById
 	}
-
+	if len(rentConfirms) == 0 {
+		return nil, constant.ErrGetDataFromId
+	}
 	return rentConfirms, nil
 }

@@ -10,6 +10,8 @@ var ErrDeleteData error = errors.New("Error, cannot delete data")
 
 // Get By Id
 var ErrFindData error = errors.New("Error, cannot find data by id")
+var ErrById error = errors.New("Error, cannot find id")
+var ErrGetDataFromId error = errors.New("Error, id didnt have any data")
 
 //
 var ErrGetDatabase error = errors.New("invalid data not found")

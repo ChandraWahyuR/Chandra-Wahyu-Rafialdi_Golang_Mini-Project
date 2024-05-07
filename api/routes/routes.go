@@ -36,7 +36,7 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	// # rent
 	eAuth.POST("/rent", r.RentRoute.PostRent)
 	eAuth.PUT("/rent/:id", r.RentRoute.UpdateRent)
-	eAuth.GET("/rent/user/:id", r.RentRoute.GetByUserID)
+	eAuth.GET("/rent/user", r.RentRoute.GetByUserID)
 
 	// # rent confirm
 	eAuth.POST("/confirm", r.RentConfirm.PostRentConfirm)

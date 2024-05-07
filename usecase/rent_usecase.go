@@ -83,6 +83,10 @@ func (u *RentUseCase) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if len(rents) == 0 {
+		return nil, constant.ErrGetDataFromId
+	}
 	return rents, nil
 }
 
