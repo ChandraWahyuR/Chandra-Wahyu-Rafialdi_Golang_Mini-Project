@@ -12,8 +12,10 @@ var ErrDeleteData error = errors.New("Error, cannot delete data")
 var ErrFindData error = errors.New("Error, cannot find data by id")
 var ErrById error = errors.New("Error, cannot find id")
 var ErrGetDataFromId error = errors.New("Error, id didnt have any data")
+var ErrUpdateRentData error = errors.New("cannot update data, data has been confirmed")
 
 //
+var ErrUpdateData error = errors.New("error, cannot update data")
 var ErrGetDatabase error = errors.New("invalid data not found")
 var ErrEmptyInput error = errors.New("Data Cannot be empty")
 

@@ -13,7 +13,7 @@ type RentConfirm struct {
 	UserId        uuid.UUID      `json:"user_id"`
 	Fee           int            `json:"fee"`
 	PaymentMethod string         `json:"payment_method"`
-	Delivery      bool           `json:"delevery"`
+	Delivery      bool           `json:"delivery"`
 	Address       string         `json:"address"`
 	AdminId       uuid.UUID      `json:"admin_id"` //pas diconfirm, extrak jwt ambil admin id put ke admin id
 	Status        string         `json:"status"`
