@@ -16,6 +16,7 @@ import (
 type RentController struct {
 	rentusecase      domain.RentUseCaseInterface
 	equipmentusecase domain.EquipmentUseCaseInterface
+	userusecase      domain.UseCaseInterface
 }
 
 func (uc *RentController) GetAll(c echo.Context) error {
@@ -51,9 +52,16 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
 	}
+
+	user, err := uc.userusecase.GetByID(userID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+	}
+
 	totalRent := equipment.Price * rent.Quantity
 	rentData := domain.Rent{
 		UserId:      userID,
+		User:        *user,
 		EquipmentId: rent.EquipmentId,
 		Equipment:   *equipment,
 		Quantity:    rent.Quantity,
@@ -161,9 +169,10 @@ func (uc *RentController) GetByUserID(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessInsert, rentResponses))
 }
 
-func NewRentController(rentusecase domain.RentUseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentController {
+func NewRentController(rentusecase domain.RentUseCaseInterface, equipment domain.EquipmentUseCaseInterface, user domain.UseCaseInterface) *RentController {
 	return &RentController{
 		rentusecase:      rentusecase,
 		equipmentusecase: equipment,
+		userusecase:      user,
 	}
 }

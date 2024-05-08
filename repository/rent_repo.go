@@ -19,7 +19,7 @@ func NewRentRepo(db *gorm.DB) *RentRepo {
 
 func (r *RentRepo) PostRent(rent *domain.Rent) error {
 	resp := drivers.FromRentUseCase(rent)
-	if err := r.DB.Create(&resp).Error; err != nil {
+	if err := r.DB.Preload("User").Create(&resp).Error; err != nil {
 		return err
 	}
 
@@ -29,7 +29,7 @@ func (r *RentRepo) PostRent(rent *domain.Rent) error {
 
 func (r *RentRepo) GetAll() ([]*domain.Rent, error) {
 	var rents []*domain.Rent
-	if err := r.DB.Preload("Equipment").Find(&rents).Error; err != nil {
+	if err := r.DB.Preload("User").Preload("Equipment").Find(&rents).Error; err != nil {
 		return nil, err
 	}
 
@@ -38,7 +38,7 @@ func (r *RentRepo) GetAll() ([]*domain.Rent, error) {
 
 func (r *RentRepo) GetById(id int) (*domain.Rent, error) {
 	db := &drivers.Rent{}
-	if err := r.DB.Preload("Equipment").First(db, id).Error; err != nil {
+	if err := r.DB.Preload("User").Preload("Equipment").First(db, id).Error; err != nil {
 		return nil, err
 	}
 	return db.ToRentUseCase(), nil
@@ -73,7 +73,7 @@ func (r *RentRepo) UpdateRent(id int, rent *domain.Rent) (*domain.Rent, error) {
 
 func (r *RentRepo) GetUserID(userID uuid.UUID) ([]*domain.Rent, error) {
 	var db []*drivers.Rent
-	if err := r.DB.Preload("Equipment").Where("user_id = ?", userID).Find(&db).Error; err != nil {
+	if err := r.DB.Preload("User").Preload("Equipment").Where("user_id = ?", userID).Find(&db).Error; err != nil {
 		return nil, err
 	}
 

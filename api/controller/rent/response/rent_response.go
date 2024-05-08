@@ -9,15 +9,23 @@ import (
 // Response from usecase to user
 
 type RentResponse struct {
-	ID          int              `json:"id"`
-	UserId      uuid.UUID        `json:"user_id"`
-	EquipmentId int              `json:"equipment_id"`
-	Equipment   EquipmentDetails `json:"equipment"`
-	Quantity    int              `json:"quantity"`
-	Total       int              `json:"total"`
+	ID int `json:"id"`
+	// UserId uuid.UUID `json:"user_id"`
+	User UserData `json:"user_data"`
+	// EquipmentId int              `json:"equipment_id"`
+	Equipment EquipmentDetails `json:"equipment"`
+	Quantity  int              `json:"quantity"`
+	Total     int              `json:"total"`
+}
+
+type UserData struct {
+	ID    uuid.UUID `json:"user_id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
 }
 
 type EquipmentDetails struct {
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Price       int    `json:"price"`
@@ -26,10 +34,15 @@ type EquipmentDetails struct {
 
 func FromUseCase(rent *domain.Rent) *RentResponse {
 	return &RentResponse{
-		ID:          rent.ID,
-		UserId:      rent.UserId,
-		EquipmentId: rent.EquipmentId,
+		ID: rent.ID,
+		// UserId: rent.UserId,
+		User: UserData{
+			ID:    rent.User.ID,
+			Name:  rent.User.Name,
+			Email: rent.User.Email,
+		},
 		Equipment: EquipmentDetails{
+			ID:          rent.Equipment.ID,
 			Name:        rent.Equipment.Name,
 			Description: rent.Equipment.Description,
 			Price:       rent.Equipment.Price,

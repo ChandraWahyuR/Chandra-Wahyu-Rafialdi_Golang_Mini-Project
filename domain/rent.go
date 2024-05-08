@@ -10,6 +10,7 @@ import (
 type Rent struct {
 	ID            int
 	UserId        uuid.UUID
+	User          User
 	RentConfirmID int
 	EquipmentId   int
 	Equipment     Equipment

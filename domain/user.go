@@ -24,9 +24,15 @@ type User struct {
 type RepositoryInterface interface {
 	Register(user *User) error
 	Login(user *User) error
+
+	// Fitur baru
+	GetByID(userID uuid.UUID) (*User, error)
 }
 
 type UseCaseInterface interface {
 	Register(user *User) (User, error)
 	Login(user *User) (User, error)
+
+	// Fitur baru
+	GetByID(userID uuid.UUID) (*User, error)
 }

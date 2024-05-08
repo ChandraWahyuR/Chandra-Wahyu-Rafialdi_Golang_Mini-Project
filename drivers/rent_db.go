@@ -11,6 +11,7 @@ import (
 type Rent struct {
 	ID            int            `json:"id" gorm:"primaryKey;autoIncrement:true"`
 	UserId        uuid.UUID      `json:"user_id"`
+	User          User           `json:"user_data"`
 	RentConfirmID int            `gorm:"many2many:rent_confirm_rents;"`
 	EquipmentId   int            `json:"equipment_id"`
 	Equipment     Equipment      `json:"equipment"`
@@ -22,8 +23,13 @@ type Rent struct {
 
 func FromRentUseCase(rent *domain.Rent) *Rent {
 	return &Rent{
-		ID:          rent.ID,
-		UserId:      rent.UserId,
+		ID:     rent.ID,
+		UserId: rent.UserId,
+		User: User{
+			ID:    rent.User.ID,
+			Name:  rent.User.Name,
+			Email: rent.User.Email,
+		},
 		EquipmentId: rent.EquipmentId,
 		Equipment: Equipment{
 			ID:          rent.Equipment.ID,
@@ -45,8 +51,13 @@ func FromRentUseCase(rent *domain.Rent) *Rent {
 // for retrive data from gorm
 func (rent *Rent) ToRentUseCase() *domain.Rent {
 	return &domain.Rent{
-		ID:          rent.ID,
-		UserId:      rent.UserId,
+		ID:     rent.ID,
+		UserId: rent.UserId,
+		User: domain.User{
+			ID:    rent.User.ID,
+			Name:  rent.User.Name,
+			Email: rent.User.Email,
+		},
 		EquipmentId: rent.EquipmentId,
 		Equipment: domain.Equipment{
 			ID:          rent.Equipment.ID,

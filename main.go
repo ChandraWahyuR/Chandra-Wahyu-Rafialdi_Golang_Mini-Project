@@ -36,7 +36,7 @@ func main() {
 
 	userController := controllers.NewUserController(userUseCase)
 	equipmentController := controllersEq.NewEquipmentController(equipmentUseCase, categoryUseCase)
-	RentController := controllersRent.NewRentController(rentUseCase, equipmentUseCase)
+	RentController := controllersRent.NewRentController(rentUseCase, equipmentUseCase, userUseCase)
 	categoryController := controllersCt.NewCategoryController(categoryUseCase)
 	rentConfirmController := controllersConf.NewRentConfirmController(rentConfirmUseCase, rentUseCase)
 

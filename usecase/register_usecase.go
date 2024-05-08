@@ -3,6 +3,8 @@ package usecase
 import (
 	"prototype/constant"
 	"prototype/domain"
+
+	"github.com/google/uuid"
 )
 
 type UserUseCase struct {
@@ -40,4 +42,8 @@ func (u *UserUseCase) Login(user *domain.User) (domain.User, error) {
 	}
 
 	return *user, nil
+}
+
+func (u *UserUseCase) GetByID(userID uuid.UUID) (*domain.User, error) {
+	return u.repository.GetByID(userID)
 }

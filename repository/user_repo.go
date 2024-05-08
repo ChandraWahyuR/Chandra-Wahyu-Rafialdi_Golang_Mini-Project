@@ -6,6 +6,7 @@ import (
 	"prototype/drivers"
 	"prototype/utils"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -46,4 +47,12 @@ func (r *UserRepo) Login(user *domain.User) error {
 
 	user.ID = userDb.ID
 	return nil
+}
+
+func (ur *UserRepo) GetByID(userID uuid.UUID) (*domain.User, error) {
+	var user domain.User
+	if err := ur.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
