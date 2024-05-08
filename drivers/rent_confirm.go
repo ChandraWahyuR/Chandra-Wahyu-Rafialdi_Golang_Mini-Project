@@ -40,6 +40,7 @@ func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 		CreatedAt:     conf.CreatedAt,
 		UpdatedAt:     conf.UpdatedAt,
 		Rents:         conf.Rents,
+		Delivery:      *conf.Delivery,
 	}
 }
 

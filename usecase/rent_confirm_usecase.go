@@ -70,7 +70,9 @@ func (u *RentConfirmUseCase) ConfirmAdmin(id int, conf *domain.RentConfirm) (*do
 	if err != nil {
 		return nil, constant.ErrFindData
 	}
-	existingRent.Status = conf.Status
+
+	existingRent.Status = conf.Status // ini tempat nyimpan status dan admin?
+	existingRent.AdminId = conf.AdminId
 
 	updatedRent, err := u.repository.ConfirmAdmin(id, existingRent)
 	if err != nil {
