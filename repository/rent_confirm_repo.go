@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"prototype/domain"
 	"prototype/drivers"
 	"time"
@@ -60,10 +61,16 @@ func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domai
 	now := time.Now()
 	returnDate := now.Add(time.Duration(conf.Duration) * 7 * 24 * time.Hour)
 
-	db.Status = conf.Status // Ini yang kesimpan ke db koh
-	db.AdminId = conf.AdminId
-	db.DateStart = now
-	db.ReturnTime = returnDate
+	// Save to db
+	if conf.Status == domain.StatusAccept {
+		db.Status = conf.Status
+		db.AdminId = conf.AdminId
+		db.DateStart = now
+		db.ReturnTime = returnDate
+	} else {
+		db.Status = conf.Status
+		db.AdminId = conf.AdminId
+	}
 
 	if err := r.DB.Save(db).Error; err != nil {
 		return nil, err
@@ -102,4 +109,36 @@ func (r *RentConfirmRepo) FindRentConfirmByUserId(id uuid.UUID) ([]*domain.RentC
 		conf[i] = value.ToRentConfirmUseCase()
 	}
 	return conf, nil
+}
+
+// User Cancel RentConfirm
+func (r *RentConfirmRepo) CancelRentConfirmByUserId(id int, userId uuid.UUID) error {
+	var rentConfirm drivers.RentConfirm
+	if err := r.DB.Where("id = ?", id).Find(&rentConfirm).Error; err != nil {
+		return err
+	}
+
+	// Validate data to userid from jwt
+	if rentConfirm.ID == 0 {
+		return errors.New("rent_confirm not found")
+	}
+	if rentConfirm.UserId != userId {
+		return errors.New("you are not authorized to cancel this rent_confirm")
+	}
+
+	if rentConfirm.Status != domain.StatusPending {
+		return errors.New("rent_confirm cannot be cancelled because it is already confirmed")
+	}
+
+	// Update Data from rent to
+	if err := r.DB.Model(&drivers.Rent{}).Where("rent_confirm_id = ?", id).Update("rent_confirm_id", 0).Error; err != nil {
+		return err
+	}
+
+	// Hard delete
+	if err := r.DB.Unscoped().Delete(&rentConfirm).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
