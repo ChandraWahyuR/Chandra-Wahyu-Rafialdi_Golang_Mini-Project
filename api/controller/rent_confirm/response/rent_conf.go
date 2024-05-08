@@ -39,6 +39,8 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 	var delivery bool
 	if conf.Delivery != nil {
 		delivery = *conf.Delivery
+	} else {
+		delivery = false
 	}
 
 	return &RentConfirmRespond{
@@ -52,7 +54,7 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		Address:       conf.Address,
 		AdminId:       conf.AdminId,
 		Status:        conf.Status,
-		DateStart:     conf.DateStart,
+		DateStart:     time.Now(),
 		ReturnTime:    conf.ReturnTime,
 	}
 }

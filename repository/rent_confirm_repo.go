@@ -22,6 +22,10 @@ func (r *RentConfirmRepo) PostRentConfirm(conf *domain.RentConfirm) error {
 	if err := r.DB.Create(&resp).Error; err != nil {
 		return err
 	}
+
+	if conf.Delivery != nil {
+		resp.Delivery = *conf.Delivery
+	}
 	// query := r.DB.Table("rents").Where("user_id = ?", resp.UserId).Update("delete_at", time.Now())
 	// user_id dan deleted_at != null
 
@@ -50,12 +54,17 @@ func (r *RentConfirmRepo) GetById(id int) (*domain.RentConfirm, error) {
 
 func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domain.RentConfirm, error) {
 	db := &drivers.RentConfirm{}
-	if err := r.DB.Unscoped().Where("id = ?", id).First(&db).Error; err != nil {
+	if err := r.DB.Unscoped().Preload("Rents").Where("id = ?", id).First(&db).Error; err != nil {
 		return nil, err
 	}
+	now := time.Now()
+	returnDate := now.Add(time.Duration(conf.Duration) * 7 * 24 * time.Hour)
 
-	db.Status = conf.Status
-	db.DateStart = time.Now()
+	db.Status = conf.Status // Ini yang kesimpan ke db koh
+	db.AdminId = conf.AdminId
+	db.DateStart = now
+	db.ReturnTime = returnDate
+
 	if err := r.DB.Save(db).Error; err != nil {
 		return nil, err
 	}

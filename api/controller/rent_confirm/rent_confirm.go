@@ -8,6 +8,7 @@ import (
 	"prototype/constant"
 	"prototype/domain"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -28,13 +29,14 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 	if err := c.Bind(&conf); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-
-	// Check if delivery is true
-	if conf.Delivery != false && *&conf.Delivery == true {
+	// Logic for delivery same as input
+	delivery := conf.Delivery
+	if delivery {
 		if conf.Address == "" {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Address is required for delivery"})
 		}
 	}
+
 	// Took Rent data that need to be confirmed
 	rents, err := uc.rentUseCase.GetUnconfirmedRents(userID)
 	if err != nil {
@@ -58,6 +60,7 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		PaymentMethod: conf.PaymentMethod,
 		Delivery:      &conf.Delivery,
 		Address:       conf.Address,
+		DateStart:     time.Now(),
 		Status:        status,
 		Rents:         rentsData,
 	}
@@ -131,6 +134,12 @@ func (uc *RentConfirmController) FindRentConfirmByUserId(c echo.Context) error {
 
 // Admin
 func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
+	token := c.Request().Header.Get("Authorization")
+	adminID, _, _, err := md.ExtractToken(token)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrById.Error()))
+	}
+
 	var conf request.RentConfirmRequest
 	if err := c.Bind(&conf); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Eror get data"})
@@ -151,11 +160,16 @@ func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent confirmation has already been confirmed"})
 	}
 
-	rentData := domain.RentConfirm{
-		Status: conf.Status,
+	now := time.Now()
+	returnDate := now.Add(time.Duration(conf.Duration) * 7 * 24 * time.Hour)
+
+	rentConfirmData := domain.RentConfirm{
+		AdminId:    adminID,
+		Status:     conf.Status,
+		ReturnTime: returnDate,
 	}
 
-	confirmedRent, err := uc.rentconfirmUseCase.ConfirmAdmin(id, &rentData)
+	confirmedRent, err := uc.rentconfirmUseCase.ConfirmAdmin(id, &rentConfirmData)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to confirm rent"})
 	}
