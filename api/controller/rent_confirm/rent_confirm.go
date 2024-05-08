@@ -178,6 +178,36 @@ func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, rentResponse))
 }
 
+func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error {
+	token := c.Request().Header.Get("Authorization")
+	userID, _, _, err := md.ExtractToken(token)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrById.Error()))
+	}
+
+	rentID := c.Param("id")
+	id, err := strconv.Atoi(rentID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+	}
+
+	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+	}
+
+	// If user didnt have data rent confirmation
+	if rentConfirm.UserId != userID {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent confirmation not found"})
+	}
+
+	conf := uc.rentconfirmUseCase.CancelRentConfirmByUserId(id, userID)
+	if conf != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to cancel rent confirmation"})
+	}
+
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Rent confirmation cancelled successfully", nil))
+}
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface) *RentConfirmController {
 	return &RentConfirmController{
 		rentconfirmUseCase: confirm,

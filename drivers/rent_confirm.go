@@ -58,5 +58,6 @@ func (conf *RentConfirm) ToRentConfirmUseCase() *domain.RentConfirm {
 		CreatedAt:     conf.CreatedAt,
 		UpdatedAt:     conf.UpdatedAt,
 		Rents:         conf.Rents,
+		Delivery:      &conf.Delivery,
 	}
 }

@@ -43,6 +43,12 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		delivery = false
 	}
 
+	var timeStart time.Time
+	if conf.Status != domain.StatusAccept {
+		timeStart = conf.DateStart
+	} else {
+		timeStart = time.Now()
+	}
 	return &RentConfirmRespond{
 		ID:            conf.ID,
 		UserId:        conf.UserId,
@@ -54,7 +60,7 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		Address:       conf.Address,
 		AdminId:       conf.AdminId,
 		Status:        conf.Status,
-		DateStart:     time.Now(),
+		DateStart:     timeStart,
 		ReturnTime:    conf.ReturnTime,
 	}
 }

@@ -41,6 +41,7 @@ type RentConfirmRepositoryInterface interface {
 
 	// New
 	FindRentConfirmByUserId(userId uuid.UUID) ([]*RentConfirm, error)
+	CancelRentConfirmByUserId(ID int, userId uuid.UUID) error
 }
 
 type RentConfirmUseCaseInterface interface {
@@ -52,4 +53,5 @@ type RentConfirmUseCaseInterface interface {
 
 	// New
 	FindRentConfirmByUserId(userId uuid.UUID) ([]*RentConfirm, error)
+	CancelRentConfirmByUserId(ID int, userId uuid.UUID) error
 }

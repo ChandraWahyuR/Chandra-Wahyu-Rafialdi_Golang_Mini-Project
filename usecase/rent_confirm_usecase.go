@@ -71,7 +71,7 @@ func (u *RentConfirmUseCase) ConfirmAdmin(id int, conf *domain.RentConfirm) (*do
 		return nil, constant.ErrFindData
 	}
 
-	existingRent.Status = conf.Status // ini tempat nyimpan status dan admin?
+	existingRent.Status = conf.Status
 	existingRent.AdminId = conf.AdminId
 
 	updatedRent, err := u.repository.ConfirmAdmin(id, existingRent)
@@ -100,4 +100,12 @@ func (u *RentConfirmUseCase) FindRentConfirmByUserId(userId uuid.UUID) ([]*domai
 		return nil, constant.ErrGetDataFromId
 	}
 	return rentConfirms, nil
+}
+
+func (u *RentConfirmUseCase) CancelRentConfirmByUserId(ID int, userId uuid.UUID) error {
+	err := u.repository.CancelRentConfirmByUserId(ID, userId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

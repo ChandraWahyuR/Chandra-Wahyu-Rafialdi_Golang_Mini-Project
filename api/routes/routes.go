@@ -37,11 +37,13 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth.POST("/rent", r.RentRoute.PostRent)
 	eAuth.PUT("/rent/:id", r.RentRoute.UpdateRent)
 	eAuth.GET("/rent/user", r.RentRoute.GetByUserID)
+	eAuth.DELETE("/rent/:id", r.RentRoute.DeleteRent)
 
 	// # rent confirm
 	eAuth.POST("/confirm", r.RentConfirm.PostRentConfirm)
 	eAuth.GET("/confirm/:id", r.RentConfirm.GetById)
 	eAuth.GET("/confirm/user", r.RentConfirm.FindRentConfirmByUserId)
+	eAuth.DELETE("/confirm/user/:id", r.RentConfirm.CancelRentConfirmByUserId)
 
 	// ================================ Admin ================================
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
@@ -55,7 +57,6 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	// # rent
 	eAuth.GET("/rent", r.RentRoute.GetAll, authorization.OnlyAdmin)
 	eAuth.GET("/rent/:id", r.RentRoute.GetById, authorization.OnlyAdmin)
-	eAuth.DELETE("/rent/:id", r.RentRoute.DeleteRent, authorization.OnlyAdmin)
 
 	// # rent confirm
 	eAuth.GET("/confirm", r.RentConfirm.GetAll)
