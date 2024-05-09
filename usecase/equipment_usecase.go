@@ -16,7 +16,7 @@ func NewEquipmentUseCase(repository domain.EquipmentRepositoryInterface) *Equipm
 }
 
 func (u *EquipmentUseCase) PostEquipment(equip *domain.Equipment) (domain.Equipment, error) {
-	if equip.Name == "" || equip.Price == 0 {
+	if equip.Name == "" || equip.Price == 0 || equip.Stock == 0 {
 		return domain.Equipment{}, constant.ErrEmptyInput
 	}
 	err := u.repository.PostEquipment(equip)
@@ -31,7 +31,7 @@ func (u *EquipmentUseCase) PostEquipment(equip *domain.Equipment) (domain.Equipm
 func (u *EquipmentUseCase) GetAll() ([]*domain.Equipment, error) {
 	equipment, err := u.repository.GetAll()
 	if err != nil {
-		return nil, err
+		return nil, constant.ErrGetDatabase
 	}
 
 	return equipment, nil
@@ -49,7 +49,7 @@ func (u *EquipmentUseCase) DeleteEquipment(id int) error {
 func (u *EquipmentUseCase) GetById(id int) (*domain.Equipment, error) {
 	equipment, err := u.repository.GetById(id)
 	if err != nil {
-		return nil, constant.ErrInsertDatabase
+		return nil, constant.ErrById
 	}
 
 	return equipment, nil

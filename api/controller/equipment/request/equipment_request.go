@@ -8,6 +8,7 @@ type EquipmentRequest struct {
 	Description string `json:"description" form:"description"`
 	Image       string `json:"image" form:"image"`
 	Price       int    `json:"price" form:"price"`
+	Stock       int    `json:"stock" form:"stock"`
 }
 
 func (r *EquipmentRequest) ToEntities() *domain.Equipment {
@@ -17,5 +18,6 @@ func (r *EquipmentRequest) ToEntities() *domain.Equipment {
 		Description: r.Description,
 		Image:       r.Image,
 		Price:       r.Price,
+		Stock:       r.Stock,
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"prototype/api/controller/equipment/request"
 	"prototype/api/controller/equipment/response"
+	"prototype/constant"
 	"prototype/domain"
 	"prototype/utils"
 	"strconv"
@@ -19,37 +20,37 @@ type EquipmentController struct {
 func (uc *EquipmentController) GetAll(c echo.Context) error {
 	res, err := uc.equipmentUseCase.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrDataNotFound.Error()})
 	}
 
 	equipmentResponses := make([]*response.EquipmentResponse, 0)
 	for _, equip := range res {
 		equipmentResponses = append(equipmentResponses, response.FromUseCase(equip))
 	}
-	return c.JSON(http.StatusOK, equipmentResponses)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", equipmentResponses))
 }
 
 func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 	var equip request.EquipmentRequest
 	if err := c.Bind(&equip); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	imageFile, err := c.FormFile("image")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to get image file"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetImage.Error()})
 	}
 
 	// Upload a image
 	imageURL, err := GetImage(imageFile)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch equipment image"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchImage.Error()})
 	}
 
 	// Retrieve category by id
 	category, err := uc.categoryUseCase.GetById(equip.CategoryId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	// Save data to struct Equipment
@@ -60,6 +61,7 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 		Description: equip.Description,
 		Image:       imageURL,
 		Price:       equip.Price,
+		Stock:       equip.Stock,
 	}
 
 	// Post equipment to database
@@ -76,12 +78,12 @@ func (uc *EquipmentController) DeleteEquipment(c echo.Context) error {
 	equipmentID := c.Param("id")
 	id, err := strconv.Atoi(equipmentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "equipment id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	equipment := uc.equipmentUseCase.DeleteEquipment(id)
 	if equipment != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrDeleteData.Error()})
 	}
 
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Delete Sucsess", equipment))
@@ -91,12 +93,12 @@ func (uc *EquipmentController) GetById(c echo.Context) error {
 	equipmentID := c.Param("id")
 	id, err := strconv.Atoi(equipmentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "equipment id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	equipment, err := uc.equipmentUseCase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 	equipmentResponse := response.FromUseCase(equipment)
 

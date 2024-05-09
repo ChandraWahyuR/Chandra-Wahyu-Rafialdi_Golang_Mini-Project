@@ -22,7 +22,7 @@ type RentController struct {
 func (uc *RentController) GetAll(c echo.Context) error {
 	res, err := uc.rentusecase.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Data still Empty"})
 	}
 
 	respon := make([]*response.RentResponse, 0)
@@ -39,23 +39,23 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	// fmt.Println("Received token:", token)
 	userID, _, _, err := md.ExtractToken(token)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Unauthorized"})
+		return c.JSON(http.StatusUnauthorized, domain.BaseErrorResponse{Status: false, Message: "Error while extracting token"})
 	}
 
 	var rent request.RentRequest
 	if err := c.Bind(&rent); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	// Took equipment data
 	equipment, err := uc.equipmentusecase.GetById(rent.EquipmentId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Equipment not found"})
 	}
 
 	user, err := uc.userusecase.GetByID(userID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "User not found"})
 	}
 
 	totalRent := equipment.Price * rent.Quantity
@@ -81,7 +81,7 @@ func (uc *RentController) DeleteRent(c echo.Context) error {
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 	rent := uc.rentusecase.DeleteRent(id)
 
@@ -92,12 +92,12 @@ func (uc *RentController) GetById(c echo.Context) error {
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	rent, err := uc.rentusecase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDataID.Error()})
 	}
 	resp, err := uc.rentusecase.PostRent(rent)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessGetData, resp))
@@ -107,31 +107,31 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	// Bind to db
 	var rent request.RentRequest
 	if err := c.Bind(&rent); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	// Get ID
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDataID.Error()})
 	}
 
 	// Take equipment id from table
 	// And equipment took the id to accsess price from table equipment id
 	rentToUpdate, err := uc.rentusecase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to fetch rent data"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Serv"})
 	}
 
 	// Check if rent is confirmed, if yes then it cannot be updated again
 	if rentToUpdate.RentConfirmID != 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Data cannot be updated"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Data Cannot be update"})
 	}
 
 	equipment, err := uc.equipmentusecase.GetById(rentToUpdate.EquipmentId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Equipment not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrDataNotFound.Error()})
 	}
 
 	// Update data
