@@ -9,7 +9,6 @@ type RentConfirmRequest struct {
 	Status        string                `json:"status"`
 	Duration      int                   `json:"duration"`
 	Rents         []*RentConfirmRequest `json:"rents"`
-	Description   string                `json:"description"`
 }
 
 func (r *RentConfirmRequest) ToEntities() *domain.RentConfirm {
@@ -19,6 +18,5 @@ func (r *RentConfirmRequest) ToEntities() *domain.RentConfirm {
 		Address:       r.Address,
 		Status:        r.Status,
 		Duration:      r.Duration,
-		Description:   r.Description,
 	}
 }

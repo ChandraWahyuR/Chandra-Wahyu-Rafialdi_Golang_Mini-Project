@@ -33,7 +33,6 @@ type RentConfirm struct {
 	Duration      int
 	DateStart     time.Time
 	ReturnTime    time.Time
-	Description   string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt

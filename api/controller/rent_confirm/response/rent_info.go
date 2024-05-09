@@ -6,14 +6,14 @@ import (
 )
 
 type RentalInfoRespond struct {
-	ID          int               `json:"id"`
-	User        UserData          `json:"user_data"`
-	Rent        []RentDetailsInfo `json:"rent"`
-	Duration    int               `json:"duration"`
-	Fee         int               `json:"fee"`
-	Address     string            `json:"address"`
-	ReturnTime  time.Time         `json:"return_time"`
-	Description string            `json:"description"`
+	ID         int               `json:"id"`
+	User       UserData          `json:"user_data"`
+	Rent       []RentDetailsInfo `json:"rent"`
+	Duration   int               `json:"duration"`
+	Fee        int               `json:"fee"`
+	Address    string            `json:"address"`
+	ReturnTime time.Time         `json:"return_time"`
+	Status     string            `json:"status"`
 }
 
 type RentDetailsInfo struct {
@@ -47,10 +47,10 @@ func FromUseCaseInfo(conf *domain.RentConfirm) *RentalInfoRespond {
 			Name:  conf.User.Name,
 			Email: conf.User.Email,
 		},
-		Duration:    conf.Duration,
-		Fee:         conf.Fee,
-		Address:     conf.Address,
-		ReturnTime:  conf.ReturnTime,
-		Description: conf.Description,
+		Duration:   conf.Duration,
+		Fee:        conf.Fee,
+		Address:    conf.Address,
+		ReturnTime: conf.ReturnTime,
+		Status:     conf.Status,
 	}
 }
