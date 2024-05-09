@@ -109,3 +109,41 @@ func (u *RentConfirmUseCase) CancelRentConfirmByUserId(ID int, userId uuid.UUID)
 	}
 	return nil
 }
+
+// Rental Info
+func (u *RentConfirmUseCase) GetAllInfoRental() ([]*domain.RentConfirm, error) {
+	rent, err := u.repository.GetAllInfoRental()
+	if err != nil {
+		return nil, constant.ErrGetDatabase
+	}
+
+	return rent, nil
+}
+
+func (u *RentConfirmUseCase) ConfirmReturnRental(ID int, conf *domain.RentConfirm) (*domain.RentConfirm, error) {
+	if conf.Status != domain.StatusAccept {
+		return nil, constant.ErrInvalidConfirmationStatus
+	}
+
+	if conf.Description != domain.StatusReturned {
+		return nil, constant.ErrInvalidReturnConfirmation
+	}
+
+	existingRent, err := u.repository.GetById(ID)
+	if err != nil {
+		return nil, constant.ErrFindData
+	}
+
+	if existingRent.Status != domain.StatusAccept {
+		return nil, constant.ErrRentalNotAccepted
+	}
+
+	existingRent.Status = domain.StatusReturned
+
+	updatedRent, err := u.repository.ConfirmReturnRental(ID, existingRent)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedRent, nil
+}

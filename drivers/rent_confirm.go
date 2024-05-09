@@ -21,6 +21,7 @@ type RentConfirm struct {
 	Duration      int            `json:"duration"`
 	DateStart     time.Time      `json:"date_start"`
 	ReturnTime    time.Time      `json:"return_time"`
+	Description   string         `json:"description"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
@@ -47,6 +48,7 @@ func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 		UpdatedAt:     conf.UpdatedAt,
 		Rents:         conf.Rents,
 		Delivery:      *conf.Delivery,
+		Description:   conf.Description,
 	}
 }
 
@@ -70,5 +72,6 @@ func (conf *RentConfirm) ToRentConfirmUseCase() *domain.RentConfirm {
 		UpdatedAt:     conf.UpdatedAt,
 		Rents:         conf.Rents,
 		Delivery:      &conf.Delivery,
+		Description:   conf.Description,
 	}
 }

@@ -61,4 +61,8 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	// # rent confirm
 	eAuth.GET("/confirm", r.RentConfirm.GetAll)
 	eAuth.PUT("/admin/confirm/:id", r.RentConfirm.ConfirmAdmin)
+
+	// # rental info
+	eAuth.GET("/admin/info", r.RentConfirm.GetAllInfoRental)
+	// eAuth.PUT("/admin/info/:id", r.RentConfirm.ConfirmReturnRental)
 }
