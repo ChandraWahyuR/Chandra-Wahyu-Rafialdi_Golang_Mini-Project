@@ -163,17 +163,25 @@ func (r *RentConfirmRepo) ConfirmReturnRental(id int, conf *domain.RentConfirm) 
 	if err := r.DB.Unscoped().Preload("User").Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).Where("id = ?", id).First(&db).Error; err != nil {
 		return nil, err
 	}
-	rentConfirm := &drivers.RentConfirm{}
-	if err := r.DB.First(rentConfirm, id).Error; err != nil {
+
+	db.Status = conf.Status
+
+	if err := r.DB.Save(db).Error; err != nil {
 		return nil, err
 	}
 
-	// Update status pengembalian sesuai dengan status yang diberikan
-	rentConfirm.Status = conf.Status
+	// Return Eequipment stock
+	for _, rent := range db.Rents {
+		equipment := &drivers.Equipment{}
+		if err := r.DB.First(equipment, rent.EquipmentId).Error; err != nil {
+			return nil, err
+		}
 
-	// Simpan perubahan ke database
-	if err := r.DB.Save(rentConfirm).Error; err != nil {
-		return nil, err
+		equipment.Stock += rent.Quantity
+
+		if err := r.DB.Save(equipment).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	return db.ToRentConfirmUseCase(), nil
