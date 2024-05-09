@@ -17,6 +17,7 @@ const (
 type RentConfirm struct {
 	ID            int
 	UserId        uuid.UUID
+	User          User
 	Rents         []Rent `gorm:"foreignKey:RentConfirmID;"`
 	Fee           int
 	PaymentMethod string

@@ -38,7 +38,7 @@ func (r *RentConfirmRepo) PostRentConfirm(conf *domain.RentConfirm) error {
 func (r *RentConfirmRepo) GetAll() ([]*domain.RentConfirm, error) {
 	var rentConfirms []*domain.RentConfirm
 	status := "Pending"
-	if err := r.DB.Unscoped().Preload("Rents").Where("status = ?", status).Find(&rentConfirms).Error; err != nil {
+	if err := r.DB.Unscoped().Preload("User").Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).Where("status = ?", status).Find(&rentConfirms).Error; err != nil {
 		return nil, err
 	}
 
@@ -46,7 +46,7 @@ func (r *RentConfirmRepo) GetAll() ([]*domain.RentConfirm, error) {
 }
 func (r *RentConfirmRepo) GetById(id int) (*domain.RentConfirm, error) {
 	db := &drivers.RentConfirm{}
-	if err := r.DB.Unscoped().Preload("Rents").First(db, id).Error; err != nil {
+	if err := r.DB.Unscoped().Preload("User").Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).First(db, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -55,7 +55,7 @@ func (r *RentConfirmRepo) GetById(id int) (*domain.RentConfirm, error) {
 
 func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domain.RentConfirm, error) {
 	db := &drivers.RentConfirm{}
-	if err := r.DB.Unscoped().Preload("Rents").Where("id = ?", id).First(&db).Error; err != nil {
+	if err := r.DB.Unscoped().Preload("User").Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).Where("id = ?", id).First(&db).Error; err != nil {
 		return nil, err
 	}
 	now := time.Now()
@@ -100,7 +100,7 @@ func (r *RentConfirmRepo) DeleteRentConfirm(id int) error {
 // Get Confirmation about ren By User ID
 func (r *RentConfirmRepo) FindRentConfirmByUserId(id uuid.UUID) ([]*domain.RentConfirm, error) {
 	var db []*drivers.RentConfirm
-	if err := r.DB.Unscoped().Preload("Rents").Where("user_id = ?", id).Find(&db).Error; err != nil {
+	if err := r.DB.Unscoped().Preload("User").Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).Where("user_id = ?", id).Find(&db).Error; err != nil {
 		return nil, err
 	}
 
