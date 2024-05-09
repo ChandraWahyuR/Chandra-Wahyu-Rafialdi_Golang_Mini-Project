@@ -17,6 +17,7 @@ type Rent struct {
 	Equipment     Equipment      `json:"equipment"`
 	Quantity      int            `json:"quantity"`
 	Total         int            `json:"total"`
+	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
@@ -45,6 +46,7 @@ func FromRentUseCase(rent *domain.Rent) *Rent {
 		Quantity:  rent.Quantity,
 		Total:     rent.Total,
 		UpdatedAt: rent.UpdatedAt,
+		CreatedAt: rent.CreatedAt,
 	}
 }
 
@@ -69,8 +71,9 @@ func (rent *Rent) ToRentUseCase() *domain.Rent {
 			UpdatedAt:   rent.Equipment.UpdatedAt,
 			DeletedAt:   rent.Equipment.DeletedAt,
 		},
-		Quantity: rent.Quantity,
-		Total:    rent.Total,
+		Quantity:  rent.Quantity,
+		Total:     rent.Total,
+		CreatedAt: rent.CreatedAt,
 		// UpdatedAt: rent.UpdatedAt,
 	}
 }

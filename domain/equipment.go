@@ -28,6 +28,8 @@ type EquipmentRepositoryInterface interface {
 	DeleteEquipment(ID int) error
 
 	UpdateEquipment(id int, equipment *Equipment) (*Equipment, error)
+	//
+	UpdateQuantity(equipment *Equipment) (*Equipment, error)
 }
 
 // Logic related to user activity
@@ -38,4 +40,6 @@ type EquipmentUseCaseInterface interface {
 	DeleteEquipment(ID int) error
 
 	UpdateEquipment(id int, equipment *Equipment) (*Equipment, error)
+	//
+	UpdateQuantity(equipment *Equipment) (*Equipment, error)
 }

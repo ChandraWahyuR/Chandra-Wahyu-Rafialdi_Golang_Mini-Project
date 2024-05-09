@@ -11,6 +11,11 @@ const (
 	StatusPending = "Pending"
 	StatusAccept  = "Accept"
 	StatusReject  = "Reject"
+
+	// Info
+	StatusNotReturn  = "Not Return"
+	StatusReturned   = "Returned"
+	StatusExceedTime = "Excceed Time Limtit"
 )
 
 // `gorm:"many2many:rent_confirm_rents;"`
@@ -28,6 +33,7 @@ type RentConfirm struct {
 	Duration      int
 	DateStart     time.Time
 	ReturnTime    time.Time
+	Description   string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt
@@ -43,6 +49,10 @@ type RentConfirmRepositoryInterface interface {
 	// New
 	FindRentConfirmByUserId(userId uuid.UUID) ([]*RentConfirm, error)
 	CancelRentConfirmByUserId(ID int, userId uuid.UUID) error
+
+	// Rental Info
+	GetAllInfoRental() ([]*RentConfirm, error)
+	ConfirmReturnRental(ID int, conf *RentConfirm) (*RentConfirm, error)
 }
 
 type RentConfirmUseCaseInterface interface {
@@ -55,4 +65,8 @@ type RentConfirmUseCaseInterface interface {
 	// New
 	FindRentConfirmByUserId(userId uuid.UUID) ([]*RentConfirm, error)
 	CancelRentConfirmByUserId(ID int, userId uuid.UUID) error
+
+	// Rental Info
+	GetAllInfoRental() ([]*RentConfirm, error)
+	ConfirmReturnRental(ID int, conf *RentConfirm) (*RentConfirm, error)
 }

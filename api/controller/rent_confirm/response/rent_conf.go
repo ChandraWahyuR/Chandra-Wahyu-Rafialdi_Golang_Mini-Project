@@ -8,8 +8,7 @@ import (
 )
 
 type RentConfirmRespond struct {
-	ID int `json:"id"`
-	// UserId        uuid.UUID     `json:"user_id"`
+	ID            int           `json:"id"`
 	User          UserData      `json:"user_data"`
 	Rent          []RentDetails `json:"rent" gorm:"foreignKey:RentConfirmID"`
 	Duration      int           `json:"duration"`
@@ -20,7 +19,7 @@ type RentConfirmRespond struct {
 	AdminId       uuid.UUID     `json:"admin_id"`
 	Status        string        `json:"status"`
 	DateStart     time.Time     `json:"date_start"`
-	ReturnTime    time.Time     `json:"return_time"` // ini awal user kirim kosong, nanti pas admin confirm baru isi
+	ReturnTime    time.Time     `json:"return_time"`
 }
 
 type RentDetails struct {
@@ -64,8 +63,7 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		timeStart = time.Now()
 	}
 	return &RentConfirmRespond{
-		ID: conf.ID,
-		// UserId: conf.UserId,
+		ID:   conf.ID,
 		Rent: rentDetails,
 		User: UserData{
 			ID:    conf.User.ID,

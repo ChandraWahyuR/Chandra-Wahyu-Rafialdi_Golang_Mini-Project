@@ -234,6 +234,48 @@ func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error
 
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Rent confirmation cancelled successfully", nil))
 }
+
+// Rental Info
+func (uc *RentConfirmController) GetAllInfoRental(c echo.Context) error {
+	res, err := uc.rentconfirmUseCase.GetAllInfoRental()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
+
+	respon := make([]*response.RentalInfoRespond, 0)
+	for _, respond := range res {
+		respon = append(respon, response.FromUseCaseInfo(respond))
+	}
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", respon))
+}
+
+// func (uc *RentConfirmController) ConfirmReturnRental(c echo.Context) error {
+// 	var conf request.RentConfirmRequest
+// 	if err := c.Bind(&conf); err != nil {
+// 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Error getting data"})
+// 	}
+
+// 	rentID := c.Param("id")
+// 	id, err := strconv.Atoi(rentID)
+// 	if err != nil {
+// 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+// 	}
+
+// 	rentConfirmData := domain.RentConfirm{
+// 		Description: conf.Description,
+// 	}
+
+// 	// Confirm Return Rental
+// 	updatedRentConfirm, err := uc.rentconfirmUseCase.ConfirmReturnRental(id, &rentConfirmData)
+// 	if err != nil {
+// 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "error confirming rental return"})
+// 	}
+
+// 	rentResponse := response.FromUseCase(updatedRentConfirm)
+
+// 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, rentResponse))
+// }
+
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface, user domain.UseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentConfirmController {
 	return &RentConfirmController{
 		rentconfirmUseCase: confirm,

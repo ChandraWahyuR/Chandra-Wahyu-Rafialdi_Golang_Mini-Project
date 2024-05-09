@@ -75,3 +75,11 @@ func (r *EquipmentRepo) UpdateEquipment(id int, equipment *domain.Equipment) (*d
 	updatedEquipment := db.ToEquipmentUseCase()
 	return updatedEquipment, nil
 }
+
+func (r *EquipmentRepo) UpdateQuantity(equipment *domain.Equipment) (*domain.Equipment, error) {
+	err := r.DB.Save(equipment).Error
+	if err != nil {
+		return nil, err
+	}
+	return equipment, nil
+}

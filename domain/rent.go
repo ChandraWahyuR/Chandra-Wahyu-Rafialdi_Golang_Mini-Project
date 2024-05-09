@@ -16,6 +16,7 @@ type Rent struct {
 	Equipment     Equipment
 	Quantity      int
 	Total         int
+	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt
 }

@@ -37,3 +37,8 @@ var ErrLogin error = errors.New("Invalid data, user cannot be found")
 // Rent_confirm
 var ErrEmptyAddress error = errors.New("Address Cannot be empty")
 var ErrEmptyStatus error = errors.New("Status Cannot be empty")
+
+// Info Rental
+var ErrInvalidConfirmationStatus error = errors.New("Invalid confirmation status")
+var ErrInvalidReturnConfirmation error = errors.New("cannot return confirmation status")
+var ErrRentalNotAccepted error = errors.New("error, data has been return")

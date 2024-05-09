@@ -64,3 +64,11 @@ func (u *EquipmentUseCase) UpdateEquipment(id int, equipment *domain.Equipment) 
 
 	return updatedEquipment, nil
 }
+
+func (uc *EquipmentUseCase) UpdateQuantity(equipment *domain.Equipment) (*domain.Equipment, error) {
+	updatedEquipment, err := uc.repository.UpdateQuantity(equipment)
+	if err != nil {
+		return nil, err
+	}
+	return updatedEquipment, nil
+}
