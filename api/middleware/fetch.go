@@ -1,4 +1,4 @@
-package equipment
+package middleware
 
 import (
 	"context"
@@ -10,9 +10,8 @@ import (
 	"github.com/cloudinary/cloudinary-go/api/uploader"
 )
 
-func GetImage(imageFile *multipart.FileHeader) (string, error) {
+func GetImage(imageFile *multipart.FileHeader, folder string) (string, error) {
 	cloudinaryURL := os.Getenv("CLOUDINARY_URL")
-	uploadFolder := os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
 
 	// Create instance for cloudinary
 	cld, err := cloudinary.NewFromURL(cloudinaryURL)
@@ -28,7 +27,7 @@ func GetImage(imageFile *multipart.FileHeader) (string, error) {
 	defer file.Close()
 
 	// Upload to cloudinary
-	uploadParams := uploader.UploadParams{Folder: uploadFolder}
+	uploadParams := uploader.UploadParams{Folder: folder}
 	uploadResult, err := cld.Upload.Upload(context.Background(), file, uploadParams)
 	if err != nil {
 		return "", err

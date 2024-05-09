@@ -2,8 +2,10 @@ package equipment
 
 import (
 	"net/http"
+	"os"
 	"prototype/api/controller/equipment/request"
 	"prototype/api/controller/equipment/response"
+	"prototype/api/middleware"
 	"prototype/constant"
 	"prototype/domain"
 	"prototype/utils"
@@ -42,7 +44,8 @@ func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 	}
 
 	// Upload a image
-	imageURL, err := GetImage(imageFile)
+	folder := os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
+	imageURL, err := middleware.GetImage(imageFile, folder)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchImage.Error()})
 	}

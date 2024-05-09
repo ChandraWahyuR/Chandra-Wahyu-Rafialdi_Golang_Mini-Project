@@ -2,6 +2,7 @@ package rentconfirm
 
 import (
 	"net/http"
+	"os"
 	"prototype/api/controller/rent_confirm/request"
 	"prototype/api/controller/rent_confirm/response"
 	md "prototype/api/middleware"
@@ -28,10 +29,22 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Unauthorized"})
 	}
 
-	var conf request.RentConfirmRequest
+	var conf request.PostConfirmRequest
 	if err := c.Bind(&conf); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
+
+	imageFile, err := c.FormFile("payment_method")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetImage.Error()})
+	}
+	// Upload a image
+	folder := os.Getenv("CLOUDINARY_UPLOAD_BUKTI")
+	imageURL, err := md.GetImage(imageFile, folder)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchImage.Error()})
+	}
+
 	// Logic for delivery same as input
 	delivery := conf.Delivery
 	if delivery {
@@ -64,11 +77,10 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 
 	status := domain.StatusPending
 	confirmData := domain.RentConfirm{
-		UserId: userID,
-		User:   *user,
-
+		UserId:        userID,
+		User:          *user,
 		Duration:      conf.Duration,
-		PaymentMethod: conf.PaymentMethod,
+		PaymentMethod: imageURL,
 		Delivery:      &conf.Delivery,
 		Address:       conf.Address,
 		DateStart:     time.Now(),
