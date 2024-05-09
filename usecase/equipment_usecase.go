@@ -54,3 +54,13 @@ func (u *EquipmentUseCase) GetById(id int) (*domain.Equipment, error) {
 
 	return equipment, nil
 }
+
+func (u *EquipmentUseCase) UpdateEquipment(id int, equipment *domain.Equipment) (*domain.Equipment, error) {
+
+	updatedEquipment, err := u.repository.UpdateEquipment(id, equipment)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedEquipment, nil
+}

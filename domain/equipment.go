@@ -26,6 +26,8 @@ type EquipmentRepositoryInterface interface {
 	GetAll() ([]*Equipment, error)
 	GetById(ID int) (*Equipment, error)
 	DeleteEquipment(ID int) error
+
+	UpdateEquipment(id int, equipment *Equipment) (*Equipment, error)
 }
 
 // Logic related to user activity
@@ -34,4 +36,6 @@ type EquipmentUseCaseInterface interface {
 	GetAll() ([]*Equipment, error)
 	GetById(ID int) (*Equipment, error)
 	DeleteEquipment(ID int) error
+
+	UpdateEquipment(id int, equipment *Equipment) (*Equipment, error)
 }

@@ -54,3 +54,24 @@ func (r *EquipmentRepo) DeleteEquipment(id int) error {
 	}
 	return nil
 }
+
+func (r *EquipmentRepo) UpdateEquipment(id int, equipment *domain.Equipment) (*domain.Equipment, error) {
+	db := &drivers.Equipment{}
+	if err := r.DB.First(db, id).Error; err != nil {
+		return nil, err
+	}
+
+	db.Name = equipment.Name
+	db.CategoryId = equipment.CategoryId
+	db.Description = equipment.Description
+	db.Image = equipment.Image
+	db.Price = equipment.Price
+	db.Stock = equipment.Stock
+
+	if err := r.DB.Save(db).Error; err != nil {
+		return nil, err
+	}
+
+	updatedEquipment := db.ToEquipmentUseCase()
+	return updatedEquipment, nil
+}

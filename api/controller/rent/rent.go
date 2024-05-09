@@ -53,6 +53,11 @@ func (uc *RentController) PostRent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Equipment not found"})
 	}
 
+	// Check equipment stock
+	if rent.Quantity > equipment.Stock {
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Requested quantity exceeds available stock"})
+	}
+
 	user, err := uc.userusecase.GetByID(userID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "User not found"})
@@ -73,6 +78,15 @@ func (uc *RentController) PostRent(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(err), domain.NewErrorResponse(err.Error()))
 	}
 
+	// Update equipment stock
+	equipment.Stock -= rent.Quantity
+	_, err = uc.equipmentusecase.UpdateEquipment(rent.EquipmentId, equipment)
+	if err != nil {
+		// Rollback rent entry if stock deduction fails
+		uc.rentusecase.DeleteRent(resp.ID)
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Failed to update equipment stock"})
+	}
+
 	response := response.FromUseCase(&resp)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessInsert, response))
 }
@@ -83,9 +97,28 @@ func (uc *RentController) DeleteRent(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
-	rent := uc.rentusecase.DeleteRent(id)
 
-	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessDelete, rent))
+	// Get rent data before deleting
+	rentToDelete, err := uc.rentusecase.GetById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDataID.Error()})
+	}
+
+	equipment, err := uc.equipmentusecase.GetById(rentToDelete.EquipmentId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDataID.Error()})
+	}
+	equipment.Stock += rentToDelete.Quantity
+
+	// Update equipment stock
+	_, err = uc.equipmentusecase.UpdateEquipment(rentToDelete.EquipmentId, equipment)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrUpdateData.Error()})
+	}
+	// Delete rent data
+	err = uc.rentusecase.DeleteRent(id)
+
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessDelete, nil))
 }
 
 func (uc *RentController) GetById(c echo.Context) error {
@@ -134,6 +167,16 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrDataNotFound.Error()})
 	}
 
+	// Check if stock is got taken or decrease
+	// Calculate difference in quantity
+	quantityDifference := rent.Quantity - rentToUpdate.Quantity
+
+	equipment.Stock -= quantityDifference
+
+	if equipment.Stock < 0 {
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Insufficient equipment stock"})
+	}
+
 	// Update data
 	totalRent := equipment.Price * rent.Quantity
 	rentData := domain.Rent{
@@ -144,6 +187,10 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	updateRent, err := uc.rentusecase.UpdateRent(id, &rentData)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, constant.ErrUpdateData)
+	}
+	_, err = uc.equipmentusecase.UpdateEquipment(rentToUpdate.EquipmentId, equipment)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrUpdateData.Error()})
 	}
 	respon := response.FromUseCase(updateRent)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, respon))
