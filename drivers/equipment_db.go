@@ -15,6 +15,7 @@ type Equipment struct {
 	Description string            `json:"description"`
 	Image       string            `json:"image"`
 	Price       int               `json:"price"`
+	Stock       int               `json:"stock"`
 	CreatedAt   time.Time         `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time         `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt    `json:"deleted_at" gorm:"index"`
@@ -29,6 +30,7 @@ func FromEquipmentUseCase(eq *domain.Equipment) *Equipment {
 		Description: eq.Description,
 		Image:       eq.Image,
 		Price:       eq.Price,
+		Stock:       eq.Stock,
 		CreatedAt:   eq.CreatedAt,
 		UpdatedAt:   eq.UpdatedAt,
 	}
@@ -43,9 +45,11 @@ func (eq *Equipment) ToEquipmentUseCase() *domain.Equipment {
 		Description: eq.Description,
 		Image:       eq.Image,
 		Price:       eq.Price,
+		Stock:       eq.Stock,
 		CreatedAt:   eq.CreatedAt,
 		UpdatedAt:   eq.UpdatedAt,
 		Category: domain.CategoryEquipment{
+			ID:   eq.Category.ID,
 			Name: eq.Category.Name,
 		},
 	}
