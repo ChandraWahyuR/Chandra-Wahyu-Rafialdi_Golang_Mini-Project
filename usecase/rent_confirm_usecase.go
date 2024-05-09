@@ -121,29 +121,10 @@ func (u *RentConfirmUseCase) GetAllInfoRental() ([]*domain.RentConfirm, error) {
 }
 
 func (u *RentConfirmUseCase) ConfirmReturnRental(ID int, conf *domain.RentConfirm) (*domain.RentConfirm, error) {
-	if conf.Status != domain.StatusAccept {
-		return nil, constant.ErrInvalidConfirmationStatus
-	}
-
-	if conf.Description != domain.StatusReturned {
-		return nil, constant.ErrInvalidReturnConfirmation
-	}
-
-	existingRent, err := u.repository.GetById(ID)
-	if err != nil {
-		return nil, constant.ErrFindData
-	}
-
-	if existingRent.Status != domain.StatusAccept {
-		return nil, constant.ErrRentalNotAccepted
-	}
-
-	existingRent.Status = domain.StatusReturned
-
-	updatedRent, err := u.repository.ConfirmReturnRental(ID, existingRent)
+	confirmedRent, err := u.repository.ConfirmReturnRental(ID, conf)
 	if err != nil {
 		return nil, err
 	}
 
-	return updatedRent, nil
+	return confirmedRent, nil
 }

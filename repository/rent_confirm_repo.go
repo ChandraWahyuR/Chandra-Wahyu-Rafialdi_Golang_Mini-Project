@@ -61,15 +61,12 @@ func (r *RentConfirmRepo) ConfirmAdmin(id int, conf *domain.RentConfirm) (*domai
 	now := time.Now()
 	returnDate := now.Add(time.Duration(conf.Duration) * 7 * 24 * time.Hour)
 
-	// Keterangan
-	description := domain.StatusNotReturn
 	// Save to db
 	if conf.Status == domain.StatusAccept {
 		db.Status = conf.Status
 		db.AdminId = conf.AdminId
 		db.DateStart = now
 		db.ReturnTime = returnDate
-		db.Description = description
 	} else {
 		db.Status = conf.Status
 		db.AdminId = conf.AdminId
@@ -153,7 +150,7 @@ func (r *RentConfirmRepo) GetAllInfoRental() ([]*domain.RentConfirm, error) {
 		Unscoped().
 		Preload("User").
 		Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).
-		Where("description <> '' AND status = ?", domain.StatusAccept).
+		Where("status = ?", domain.StatusAccept).
 		Find(&rentConfirms).
 		Error; err != nil {
 		return nil, err
@@ -166,9 +163,16 @@ func (r *RentConfirmRepo) ConfirmReturnRental(id int, conf *domain.RentConfirm) 
 	if err := r.DB.Unscoped().Preload("User").Preload("Rents", func(db *gorm.DB) *gorm.DB { return db.Preload("Equipment") }).Where("id = ?", id).First(&db).Error; err != nil {
 		return nil, err
 	}
+	rentConfirm := &drivers.RentConfirm{}
+	if err := r.DB.First(rentConfirm, id).Error; err != nil {
+		return nil, err
+	}
 
-	db.Description = conf.Description
-	if err := r.DB.Save(db).Error; err != nil {
+	// Update status pengembalian sesuai dengan status yang diberikan
+	rentConfirm.Status = conf.Status
+
+	// Simpan perubahan ke database
+	if err := r.DB.Save(rentConfirm).Error; err != nil {
 		return nil, err
 	}
 

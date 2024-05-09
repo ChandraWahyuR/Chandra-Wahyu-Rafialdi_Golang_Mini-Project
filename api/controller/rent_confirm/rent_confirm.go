@@ -249,32 +249,34 @@ func (uc *RentConfirmController) GetAllInfoRental(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", respon))
 }
 
-// func (uc *RentConfirmController) ConfirmReturnRental(c echo.Context) error {
-// 	var conf request.RentConfirmRequest
-// 	if err := c.Bind(&conf); err != nil {
-// 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Error getting data"})
-// 	}
+func (uc *RentConfirmController) ConfirmReturnRental(c echo.Context) error {
+	var conf request.RentConfirmRequest
+	if err := c.Bind(&conf); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Error getting data"})
+	}
 
-// 	rentID := c.Param("id")
-// 	id, err := strconv.Atoi(rentID)
-// 	if err != nil {
-// 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
-// 	}
+	rentID := c.Param("id")
+	id, err := strconv.Atoi(rentID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Rent ID not found"})
+	}
 
-// 	rentConfirmData := domain.RentConfirm{
-// 		Description: conf.Description,
-// 	}
+	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Invalid"})
+	}
 
-// 	// Confirm Return Rental
-// 	updatedRentConfirm, err := uc.rentconfirmUseCase.ConfirmReturnRental(id, &rentConfirmData)
-// 	if err != nil {
-// 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "error confirming rental return"})
-// 	}
+	rentConfirm.Status = conf.Status
 
-// 	rentResponse := response.FromUseCase(updatedRentConfirm)
+	confirmedRent, err := uc.rentconfirmUseCase.ConfirmReturnRental(id, rentConfirm)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
+	}
 
-// 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, rentResponse))
-// }
+	// Convert confirmed rent to response format
+	rentResponse := response.FromUseCaseInfo(confirmedRent)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, rentResponse))
+}
 
 func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface, user domain.UseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentConfirmController {
 	return &RentConfirmController{
