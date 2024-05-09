@@ -16,6 +16,9 @@ import (
 type RentConfirmController struct {
 	rentconfirmUseCase domain.RentConfirmUseCaseInterface
 	rentUseCase        domain.RentUseCaseInterface
+	//
+	userusecase      domain.UseCaseInterface
+	equipmentusecase domain.EquipmentUseCaseInterface
 }
 
 func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
@@ -53,9 +56,17 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		rentsData[i] = *rent
 	}
 
+	// Data from equipemt and user for show data in response
+	user, err := uc.userusecase.GetByID(userID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "User not found"})
+	}
+
 	status := domain.StatusPending
 	confirmData := domain.RentConfirm{
-		UserId:        userID,
+		UserId: userID,
+		User:   *user,
+
 		Duration:      conf.Duration,
 		PaymentMethod: conf.PaymentMethod,
 		Delivery:      &conf.Delivery,
@@ -69,10 +80,25 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		confirmData.Rents[i] = *rent
 	}
 
+	// Tambahan
+	equipementsData := make([]domain.Rent, len(rents))
+	for i, rent := range rents {
+		rentData := *rent
+		equipment, err := uc.equipmentusecase.GetById(rentData.EquipmentId)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get equipment"})
+		}
+
+		rentData.Equipment = *equipment
+		rentsData[i] = rentData
+	}
+
 	confirmedRent, err := uc.rentconfirmUseCase.PostRentConfirm(&confirmData)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
 	}
+	confirmData.Rents = equipementsData
+	//
 
 	rentResponse := response.FromUseCase(&confirmedRent)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", rentResponse))
@@ -208,9 +234,12 @@ func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error
 
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Rent confirmation cancelled successfully", nil))
 }
-func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface) *RentConfirmController {
+func NewRentConfirmController(confirm domain.RentConfirmUseCaseInterface, rent domain.RentUseCaseInterface, user domain.UseCaseInterface, equipment domain.EquipmentUseCaseInterface) *RentConfirmController {
 	return &RentConfirmController{
 		rentconfirmUseCase: confirm,
 		rentUseCase:        rent,
+		//
+		userusecase:      user,
+		equipmentusecase: equipment,
 	}
 }

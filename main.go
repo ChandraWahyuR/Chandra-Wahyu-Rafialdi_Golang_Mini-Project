@@ -38,7 +38,7 @@ func main() {
 	equipmentController := controllersEq.NewEquipmentController(equipmentUseCase, categoryUseCase)
 	RentController := controllersRent.NewRentController(rentUseCase, equipmentUseCase, userUseCase)
 	categoryController := controllersCt.NewCategoryController(categoryUseCase)
-	rentConfirmController := controllersConf.NewRentConfirmController(rentConfirmUseCase, rentUseCase)
+	rentConfirmController := controllersConf.NewRentConfirmController(rentConfirmUseCase, rentUseCase, userUseCase, equipmentUseCase)
 
 	routes := routes.RouteController{
 		SignUpUser:        userController,

@@ -8,8 +8,9 @@ import (
 )
 
 type RentConfirmRespond struct {
-	ID            int           `json:"id"`
-	UserId        uuid.UUID     `json:"user_id"`
+	ID int `json:"id"`
+	// UserId        uuid.UUID     `json:"user_id"`
+	User          UserData      `json:"user_data"`
 	Rent          []RentDetails `json:"rent" gorm:"foreignKey:RentConfirmID"`
 	Duration      int           `json:"duration"`
 	Fee           int           `json:"fee"`
@@ -23,16 +24,29 @@ type RentConfirmRespond struct {
 }
 
 type RentDetails struct {
-	EquipmentId int `json:"equipment_id"`
-	Total       int `json:"total"`
+	EquipmentId   int    `json:"equipment_id"`
+	EquipmentName string `json:"name"`
+	Total         int    `json:"total"`
+}
+
+type UserData struct {
+	ID    uuid.UUID `json:"user_id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
 }
 
 func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 	rentDetails := make([]RentDetails, len(conf.Rents))
 	for i, rent := range conf.Rents {
+		equipmentName := ""
+		if rent.Equipment.ID != 0 {
+			equipmentName = rent.Equipment.Name
+		}
+
 		rentDetails[i] = RentDetails{
-			EquipmentId: rent.EquipmentId,
-			Total:       rent.Total,
+			EquipmentId:   rent.EquipmentId,
+			EquipmentName: equipmentName,
+			Total:         rent.Total,
 		}
 	}
 
@@ -50,9 +64,14 @@ func FromUseCase(conf *domain.RentConfirm) *RentConfirmRespond {
 		timeStart = time.Now()
 	}
 	return &RentConfirmRespond{
-		ID:            conf.ID,
-		UserId:        conf.UserId,
-		Rent:          rentDetails,
+		ID: conf.ID,
+		// UserId: conf.UserId,
+		Rent: rentDetails,
+		User: UserData{
+			ID:    conf.User.ID,
+			Name:  conf.User.Name,
+			Email: conf.User.Email,
+		},
 		Duration:      conf.Duration,
 		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,

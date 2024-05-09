@@ -11,6 +11,7 @@ import (
 type RentConfirm struct {
 	ID            int            `json:"id" gorm:"primaryKey;autoIncrement:true"`
 	UserId        uuid.UUID      `json:"user_id"`
+	User          User           `json:"user_data"`
 	Fee           int            `json:"fee"`
 	PaymentMethod string         `json:"payment_method"`
 	Delivery      bool           `json:"delivery"`
@@ -29,8 +30,13 @@ type RentConfirm struct {
 
 func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 	return &RentConfirm{
-		ID:            conf.ID,
-		UserId:        conf.UserId,
+		ID:     conf.ID,
+		UserId: conf.UserId,
+		User: User{
+			ID:    conf.User.ID,
+			Name:  conf.User.Name,
+			Email: conf.User.Email,
+		},
 		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,
 		Address:       conf.Address,
@@ -46,8 +52,13 @@ func FromRentConfirmUseCase(conf *domain.RentConfirm) *RentConfirm {
 
 func (conf *RentConfirm) ToRentConfirmUseCase() *domain.RentConfirm {
 	return &domain.RentConfirm{
-		ID:            conf.ID,
-		UserId:        conf.UserId,
+		ID:     conf.ID,
+		UserId: conf.UserId,
+		User: domain.User{
+			ID:    conf.User.ID,
+			Name:  conf.User.Name,
+			Email: conf.User.Email,
+		},
 		Fee:           conf.Fee,
 		PaymentMethod: conf.PaymentMethod,
 		Address:       conf.Address,
