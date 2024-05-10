@@ -1,8 +1,8 @@
 package main
 
 import (
+	controllersCt "prototype/api/controller/category"
 	controllersEq "prototype/api/controller/equipment"
-	controllersCt "prototype/api/controller/equipment/category"
 	controllersRent "prototype/api/controller/rent"
 	controllersConf "prototype/api/controller/rent_confirm"
 	controllers "prototype/api/controller/user"
@@ -40,6 +40,7 @@ func main() {
 	categoryController := controllersCt.NewCategoryController(categoryUseCase)
 	rentConfirmController := controllersConf.NewRentConfirmController(rentConfirmUseCase, rentUseCase, userUseCase, equipmentUseCase)
 
+	// Chat bot
 	routes := routes.RouteController{
 		SignUpUser:        userController,
 		EquipmentRoute:    equipmentController,

@@ -3,8 +3,8 @@ package category
 import (
 	"net/http"
 
-	"prototype/api/controller/equipment/category/request"
-	"prototype/api/controller/equipment/category/response"
+	"prototype/api/controller/category/request"
+	"prototype/api/controller/category/response"
 	"prototype/domain"
 	"prototype/utils"
 	"strconv"
