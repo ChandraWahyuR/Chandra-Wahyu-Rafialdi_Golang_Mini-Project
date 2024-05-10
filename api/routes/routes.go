@@ -1,8 +1,9 @@
 package routes
 
 import (
+	"prototype/api/controller/category"
+	"prototype/api/controller/chatbot"
 	"prototype/api/controller/equipment"
-	"prototype/api/controller/equipment/category"
 	"prototype/api/controller/rent"
 
 	rentconfirm "prototype/api/controller/rent_confirm"
@@ -20,6 +21,7 @@ type RouteController struct {
 	RentRoute         *rent.RentController
 	CategoryEquipment *category.CategoryController
 	RentConfirm       *rentconfirm.RentConfirmController
+	ChatBot           *chatbot.ChatAI
 }
 
 func (r *RouteController) InitRoute(e *echo.Echo) {
@@ -45,6 +47,8 @@ func (r *RouteController) InitRoute(e *echo.Echo) {
 	eAuth.GET("/confirm/user", r.RentConfirm.FindRentConfirmByUserId)
 	eAuth.DELETE("/confirm/user/:id", r.RentConfirm.CancelRentConfirmByUserId)
 
+	// # chatbot
+	eAuth.POST("/chatbot", r.ChatBot.HandleChatCompletion)
 	// ================================ Admin ================================
 	eAuth.POST("/admin/equipment", r.EquipmentRoute.PostEquipment, authorization.OnlyAdmin)
 	eAuth.DELETE("/admin/equipment/:id", r.EquipmentRoute.DeleteEquipment, authorization.OnlyAdmin)
