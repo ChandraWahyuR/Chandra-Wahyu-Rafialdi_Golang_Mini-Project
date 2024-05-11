@@ -21,7 +21,6 @@ func (m *MockUserRepository) Login(user *domain.User) error {
 	return args.Error(0)
 }
 
-// Perbaiki tanda tangan untuk GetByID
 func (m *MockUserRepository) GetByID(userID uuid.UUID) (*domain.User, error) {
 	args := m.Called(userID)
 	return args.Get(0).(*domain.User), args.Error(1)

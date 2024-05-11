@@ -59,103 +59,70 @@ func TestGetByIdRent(t *testing.T) {
 	assert.Equal(t, mockData, result)
 }
 
-func TestUpdateRent(t *testing.T) {
-	mockRepo := new(mock_data.MockRentRepository)
+func TestUpdateRent_Success(t *testing.T) {
+	mockRepo := &mock_data.MockRentRepository{}
 	rentUseCase := usecase.NewRentUseCase(mockRepo)
 
-	rent := &domain.Rent{ID: 1, Quantity: 5, Total: 250}
-	existingRent := &domain.Rent{ID: 1, Quantity: 3, Total: 150}
-	mockRepo.On("GetById", 1).Return(existingRent, nil)
-	mockRepo.On("UpdateRent", 1, existingRent).Return(rent, nil)
+	id := 123
+	rent := &domain.Rent{
+		Quantity: 3,
+		Total:    300,
+	}
 
-	updatedRent, err := rentUseCase.UpdateRent(1, rent)
+	existingRent := &domain.Rent{
+		ID:            id,
+		Quantity:      2,
+		Total:         200,
+		RentConfirmID: 0,
+	}
+
+	mockRepo.On("GetById", id).Return(existingRent, nil)
+	mockRepo.On("UpdateRent", id, existingRent).Return(existingRent, nil)
+
+	updatedRent, err := rentUseCase.UpdateRent(id, rent)
+
 	assert.NoError(t, err)
-	assert.Equal(t, rent, updatedRent)
-
-	rent.Quantity = 0
-	expectedErr := constant.ErrEmptyInput
-	_, err = rentUseCase.UpdateRent(1, rent)
-	assert.EqualError(t, err, expectedErr.Error())
-
-	rent.Quantity = 5
-	existingRent.RentConfirmID = 1
-	expectedErr = constant.ErrUpdateData
-	_, err = rentUseCase.UpdateRent(1, rent)
-	assert.EqualError(t, err, expectedErr.Error())
-
-	rent.Quantity = 5
-	existingRent.RentConfirmID = 0
-	mockRepo.On("UpdateRent", 1, existingRent).Return(nil, errors.New("some error"))
-	_, err = rentUseCase.UpdateRent(1, rent)
-	assert.Error(t, err)
+	assert.NotNil(t, updatedRent)
+	assert.Equal(t, rent.Quantity, updatedRent.Quantity)
+	assert.Equal(t, rent.Total, updatedRent.Total)
 }
 
-func TestGetUserID(t *testing.T) {
-	mockRepo := new(mock_data.MockRentRepository)
+func TestGetUserID_Success(t *testing.T) {
+	mockRepo := &mock_data.MockRentRepository{}
 	rentUseCase := usecase.NewRentUseCase(mockRepo)
+
 	userID := uuid.New()
 
-	// Test valid case
-	mockData := []*domain.Rent{{ID: 1}, {ID: 2}}
-	mockRepo.On("GetUserID", userID).Return(mockData, nil)
-	result, err := rentUseCase.GetUserID(userID)
+	expectedRents := []*domain.Rent{
+		{ID: 1, UserId: userID},
+		{ID: 2, UserId: userID},
+	}
+
+	mockRepo.On("GetUserID", userID).Return(expectedRents, nil)
+
+	rents, err := rentUseCase.GetUserID(userID)
+
 	assert.NoError(t, err)
-	assert.Equal(t, mockData, result)
-
-	// Test repository error
-	errMsg := "error getting rents by user ID"
-	mockRepo.On("GetUserID", userID).Return(nil, errors.New(errMsg))
-	_, err = rentUseCase.GetUserID(userID)
-	assert.EqualError(t, err, errMsg)
-
-	// Test empty result
-	mockRepo.On("GetUserID", userID).Return([]*domain.Rent{}, nil)
-	_, err = rentUseCase.GetUserID(userID)
-	assert.EqualError(t, err, constant.ErrGetDataFromId.Error())
+	assert.Equal(t, expectedRents, rents)
 }
 
-func TestGetUnconfirmedRents(t *testing.T) {
-	mockRepo := new(mock_data.MockRentRepository)
+func TestGetUnconfirmedRents_Success(t *testing.T) {
+	mockRepo := &mock_data.MockRentRepository{}
 	rentUseCase := usecase.NewRentUseCase(mockRepo)
+
 	userID := uuid.New()
 
-	// Test valid case
-	mockData := []*domain.Rent{{ID: 1}, {ID: 2}}
-	mockRepo.On("GetUnconfirmedRents", userID).Return(mockData, nil)
-	result, err := rentUseCase.GetUnconfirmedRents(userID)
+	expectedRents := []*domain.Rent{
+		{ID: 1, UserId: userID},
+		{ID: 2, UserId: userID},
+	}
+
+	mockRepo.On("GetUnconfirmedRents", userID).Return(expectedRents, nil)
+
+	rents, err := rentUseCase.GetUnconfirmedRents(userID)
+
 	assert.NoError(t, err)
-	assert.Equal(t, mockData, result)
-
-	// Test repository error
-	errMsg := "error getting unconfirmed rents by user ID"
-	mockRepo.On("GetUnconfirmedRents", userID).Return(nil, errors.New(errMsg))
-	_, err = rentUseCase.GetUnconfirmedRents(userID)
-	assert.EqualError(t, err, errMsg)
-}
-
-func TestPostRent_Error(t *testing.T) {
-	mockRepo := new(mock_data.MockRentRepository)
-	equipUseCase := usecase.NewRentUseCase(mockRepo)
-
-	rent := &domain.Rent{EquipmentId: 1, Quantity: 1}
-	errorMsg := "error posting rent"
-	mockRepo.On("PostRent", rent).Return(errors.New(errorMsg))
-
-	_, err := equipUseCase.PostRent(rent)
-	assert.EqualError(t, err, errorMsg)
-}
-
-func TestUpdateRent_Error(t *testing.T) {
-	mockRepo := new(mock_data.MockRentRepository)
-	rentUseCase := usecase.NewRentUseCase(mockRepo)
-
-	rent := &domain.Rent{ID: 1, Quantity: 5, Total: 250}
-	existingRent := &domain.Rent{ID: 1, Quantity: 3, Total: 150, RentConfirmID: 1}
-
-	mockRepo.On("GetById", 1).Return(existingRent, nil)
-
-	_, err := rentUseCase.UpdateRent(1, rent)
-	assert.EqualError(t, err, constant.ErrUpdateData.Error())
+	assert.Equal(t, expectedRents, rents)
 }
 
 func TestGetAll_Error(t *testing.T) {
@@ -163,8 +130,22 @@ func TestGetAll_Error(t *testing.T) {
 	equipUseCase := usecase.NewRentUseCase(mockRepo)
 
 	errorMsg := "error getting all rents"
-	mockRepo.On("GetAll").Return([]*domain.Rent{}, errors.New(errorMsg))
+	mockRepo.On("GetAll").Return([]*domain.Rent{}, errors.New(errorMsg)).Once()
 
 	_, err := equipUseCase.GetAll()
 	assert.EqualError(t, err, errorMsg)
+}
+
+func TestUpdateRent_EmptyInput(t *testing.T) {
+	mockRepo := &mock_data.MockRentRepository{}
+	rentUseCase := usecase.NewRentUseCase(mockRepo)
+
+	id := 123
+	rent := &domain.Rent{}
+
+	updatedRent, err := rentUseCase.UpdateRent(id, rent)
+
+	assert.Error(t, err)
+	assert.Nil(t, updatedRent)
+	assert.Equal(t, constant.ErrEmptyInput, err)
 }

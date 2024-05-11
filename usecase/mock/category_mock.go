@@ -28,10 +28,14 @@ func (m *MockCategoryRepository) PostCategoryEquipment(equip *domain.CategoryEqu
 }
 
 func (m *MockCategoryRepository) GetAll() ([]*domain.CategoryEquipment, error) {
+	// Mendefinisikan slice untuk menyimpan kategori
 	categories := make([]*domain.CategoryEquipment, 0, len(m.Categories))
+
+	// Mengumpulkan data kategori dari peta dan menambahkannya ke slice
 	for _, cat := range m.Categories {
 		categories = append(categories, cat)
 	}
+
 	return categories, nil
 }
 

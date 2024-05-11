@@ -86,7 +86,7 @@ func TestPostEquipment_Error(t *testing.T) {
 	equipmentUseCase := usecase.NewEquipmentUseCase(mockRepo)
 
 	equipment := &domain.Equipment{Name: "Test equipment", Price: 100, Stock: 10}
-	errorMsg := "error during add equipment"
+	errorMsg := "invalid Add Data in Database"
 
 	mockRepo.On("PostEquipment", equipment).Return(errors.New(errorMsg))
 	_, err := equipmentUseCase.PostEquipment(equipment)
