@@ -18,7 +18,7 @@ func NewRentUseCase(repository domain.RentRepositoryInterface) *RentUseCase {
 }
 
 func (u *RentUseCase) PostRent(rent *domain.Rent) (domain.Rent, error) {
-	if rent.Quantity == 0 {
+	if rent.Quantity == 0 || rent.EquipmentId == 0 {
 		return domain.Rent{}, constant.ErrEmptyInput
 	}
 	err := u.repository.PostRent(rent)

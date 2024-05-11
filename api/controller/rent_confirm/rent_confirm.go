@@ -26,12 +26,12 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 	userID, _, _, err := md.ExtractToken(token)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Unauthorized"})
+		return c.JSON(http.StatusUnauthorized, domain.BaseErrorResponse{Status: false, Message: "Unauthorized"})
 	}
 
 	var conf request.PostConfirmRequest
 	if err := c.Bind(&conf); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	imageFile, err := c.FormFile("payment_method")
@@ -49,19 +49,19 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 	delivery := conf.Delivery
 	if delivery {
 		if conf.Address == "" {
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Address is required for delivery"})
+			return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Address is required for delivery"})
 		}
 	}
 
 	// Took Rent data that need to be confirmed
 	rents, err := uc.rentUseCase.GetUnconfirmedRents(userID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Failed to get unconfirmed rents"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Failed to get unconfirmed rents"})
 	}
 
 	// Check if data rent is avaible
 	if len(rents) == 0 {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Error, rent data not found"})
+		return c.JSON(http.StatusNotFound, domain.BaseErrorResponse{Status: false, Message: "Error, rent data not found"})
 	}
 
 	rentsData := make([]domain.Rent, len(rents))
@@ -98,7 +98,7 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 		rentData := *rent
 		equipment, err := uc.equipmentusecase.GetById(rentData.EquipmentId)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get equipment"})
+			return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Failed to get equipment"})
 		}
 
 		rentData.Equipment = *equipment
@@ -107,7 +107,7 @@ func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 
 	confirmedRent, err := uc.rentconfirmUseCase.PostRentConfirm(&confirmData)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Failed to confirm rent"})
 	}
 	confirmData.Rents = equipementsData
 	//
@@ -120,12 +120,12 @@ func (uc *RentConfirmController) GetById(c echo.Context) error {
 	confirmId := c.Param("id")
 	id, err := strconv.Atoi(confirmId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "id not found"})
 	}
 
 	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 	rentConfirmResponse := response.FromUseCase(rentConfirm)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", rentConfirmResponse))
@@ -134,7 +134,7 @@ func (uc *RentConfirmController) GetById(c echo.Context) error {
 func (uc *RentConfirmController) GetAll(c echo.Context) error {
 	res, err := uc.rentconfirmUseCase.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDatabase.Error()})
 	}
 
 	respon := make([]*response.RentConfirmRespond, 0)
@@ -180,22 +180,22 @@ func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
 
 	var conf request.RentConfirmRequest
 	if err := c.Bind(&conf); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Eror get data"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDatabase.Error()})
 	}
 
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDataFromId.Error()})
 	}
 
 	if rentConfirm.Status != domain.StatusPending {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent confirmation has already been confirmed"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "rent confirmation has already been confirmed"})
 	}
 
 	now := time.Now()
@@ -209,7 +209,7 @@ func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
 
 	confirmedRent, err := uc.rentconfirmUseCase.ConfirmAdmin(id, &rentConfirmData)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to confirm rent"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "failed to confirm rent"})
 	}
 
 	rentResponse := response.FromUseCase(confirmedRent)
@@ -226,22 +226,22 @@ func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrGetDataID.Error()})
 	}
 
 	// If user didnt have data rent confirmation
 	if rentConfirm.UserId != userID {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "rent confirmation not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "rent confirmation not found"})
 	}
 
 	conf := uc.rentconfirmUseCase.CancelRentConfirmByUserId(id, userID)
 	if conf != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to cancel rent confirmation"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "failed to cancel rent confirmation"})
 	}
 
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Rent confirmation cancelled successfully", nil))
@@ -251,7 +251,7 @@ func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error
 func (uc *RentConfirmController) GetAllInfoRental(c echo.Context) error {
 	res, err := uc.rentconfirmUseCase.GetAllInfoRental()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: err.Error()})
 	}
 
 	respon := make([]*response.RentalInfoRespond, 0)
@@ -264,25 +264,25 @@ func (uc *RentConfirmController) GetAllInfoRental(c echo.Context) error {
 func (uc *RentConfirmController) ConfirmReturnRental(c echo.Context) error {
 	var conf request.RentConfirmRequest
 	if err := c.Bind(&conf); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Error getting data"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Error getting data"})
 	}
 
 	rentID := c.Param("id")
 	id, err := strconv.Atoi(rentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Rent ID not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	rentConfirm, err := uc.rentconfirmUseCase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	rentConfirm.Status = conf.Status
 
 	confirmedRent, err := uc.rentconfirmUseCase.ConfirmReturnRental(id, rentConfirm)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to confirm rent"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Failed to confirm rent"})
 	}
 
 	// Convert confirmed rent to response format
