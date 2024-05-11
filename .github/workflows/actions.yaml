@@ -48,6 +48,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/ec2-user/mini-project
+            cd /home/ec2-user/mini_project
             docker pull chandrawr/mini_project:latest
             docker run -d -p 8080:8080 chandrawr/mini_project:latest
