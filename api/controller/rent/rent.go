@@ -55,7 +55,7 @@ func (uc *RentController) PostRent(c echo.Context) error {
 
 	// Check equipment stock
 	if rent.Quantity > equipment.Stock {
-		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Requested quantity exceeds available stock"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "Requested quantity exceeds from available stock"})
 	}
 
 	user, err := uc.userusecase.GetByID(userID)
@@ -82,7 +82,8 @@ func (uc *RentController) PostRent(c echo.Context) error {
 	equipment.Stock -= rent.Quantity
 	_, err = uc.equipmentusecase.UpdateEquipment(rent.EquipmentId, equipment)
 	if err != nil {
-		// Rollback rent entry if stock deduction fails
+
+		// Rollback data rent if fail
 		uc.rentusecase.DeleteRent(resp.ID)
 		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Failed to update equipment stock"})
 	}
@@ -154,7 +155,7 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	// And equipment took the id to accsess price from table equipment id
 	rentToUpdate, err := uc.rentusecase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "Serv"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "id not found"})
 	}
 
 	// Check if rent is confirmed, if yes then it cannot be updated again

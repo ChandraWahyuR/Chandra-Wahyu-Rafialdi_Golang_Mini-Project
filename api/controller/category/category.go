@@ -5,6 +5,7 @@ import (
 
 	"prototype/api/controller/category/request"
 	"prototype/api/controller/category/response"
+	"prototype/constant"
 	"prototype/domain"
 	"prototype/utils"
 	"strconv"
@@ -19,20 +20,20 @@ type CategoryController struct {
 func (uc *CategoryController) GetAll(c echo.Context) error {
 	res, err := uc.categoryUseCase.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrDataNotFound.Error()})
 	}
 
 	equipmentResponses := make([]*response.CategoryResponse, 0)
 	for _, equip := range res {
 		equipmentResponses = append(equipmentResponses, response.FromUseCase(equip))
 	}
-	return c.JSON(http.StatusOK, equipmentResponses)
+	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", equipmentResponses))
 }
 
 func (uc *CategoryController) PostCategory(c echo.Context) error {
 	var equip request.CategoryRequest
 	if err := c.Bind(&equip); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	newEquipment := domain.CategoryEquipment{
@@ -52,7 +53,7 @@ func (uc *CategoryController) DeleteCategory(c echo.Context) error {
 	equipmentID := c.Param("id")
 	id, err := strconv.Atoi(equipmentID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "equipment id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 
 	equipment := uc.categoryUseCase.DeleteCategoryEquipment(id)
@@ -63,12 +64,12 @@ func (uc *CategoryController) GetById(c echo.Context) error {
 	categoryID := c.Param("id")
 	id, err := strconv.Atoi(categoryID)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "category id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrFetchData.Error()})
 	}
 
 	category, err := uc.categoryUseCase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid"})
+		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: constant.ErrById.Error()})
 	}
 	resp, err := uc.categoryUseCase.PostCategoryEquipment(category)
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", resp))
