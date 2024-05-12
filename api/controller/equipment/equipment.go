@@ -19,6 +19,14 @@ type EquipmentController struct {
 	categoryUseCase  domain.CategoryEquipmentUseCaseInterface
 }
 
+// @Tags Equipment
+// @Summary Get All Equipment
+// @Description Get All Equipment
+// @ID Get-All-Equipment
+// @Produce json
+// @Success 200 {object} response.EquipmentResponse
+// @Failure 400
+// @Router /equipment [get]
 func (uc *EquipmentController) GetAll(c echo.Context) error {
 	res, err := uc.equipmentUseCase.GetAll()
 	if err != nil {
@@ -32,6 +40,14 @@ func (uc *EquipmentController) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Sucsess", equipmentResponses))
 }
 
+// @Tags Equipment
+// @Summary Post Equipment
+// @Description Post Equipment
+// @ID Post-Equipment
+// @Produce json
+// @Success 200 {object} response.EquipmentResponse
+// @Failure 400
+// @Router /admin/equipment [post]
 func (uc *EquipmentController) PostEquipment(c echo.Context) error {
 	var equip request.EquipmentRequest
 	if err := c.Bind(&equip); err != nil {

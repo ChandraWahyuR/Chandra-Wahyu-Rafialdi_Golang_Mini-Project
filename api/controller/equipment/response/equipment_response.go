@@ -5,14 +5,14 @@ import (
 )
 
 type EquipmentResponse struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   int    `json:"id" example:"1"`
+	Name string `json:"name" example:"Mesin Daur Ulang Kecil 1.5 Ton"`
 	// CategoryId  int             `json:"category_id"`
-	Category    CategoryDetails `json:"category"`
-	Description string          `json:"description"`
-	Image       string          `json:"image"`
-	Price       int             `json:"price"`
-	Stock       int             `json:"stock"`
+	Category    CategoryDetails `json:"category" `
+	Description string          `json:"description" example:"Mesin Daur Ulang Kecil 1.5 Ton"`
+	Image       string          `json:"image" example:"https://cloudinary.com/photo/2016/03/31/15/32/robot-1295393_960_720.png"`
+	Price       int             `json:"price" example:"1000000"`
+	Stock       int             `json:"stock" example:"10"`
 }
 
 type CategoryDetails struct {

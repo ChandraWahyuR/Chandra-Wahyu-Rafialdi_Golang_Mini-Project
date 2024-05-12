@@ -1,0 +1,473 @@
+basePath: /v2
+definitions:
+  prototype_api_controller_rent_confirm_response.UserData:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+    type: object
+  prototype_api_controller_rent_response.UserData:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      user_id:
+        type: string
+    type: object
+  response.CategoryDetails:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  response.CategoryResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Daur Ulang
+        type: string
+    type: object
+  response.EquipmentDetails:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+    type: object
+  response.EquipmentResponse:
+    properties:
+      category:
+        allOf:
+        - $ref: '#/definitions/response.CategoryDetails'
+        description: CategoryId  int             `json:"category_id"`
+      description:
+        example: Mesin Daur Ulang Kecil 1.5 Ton
+        type: string
+      id:
+        example: 1
+        type: integer
+      image:
+        example: https://cloudinary.com/photo/2016/03/31/15/32/robot-1295393_960_720.png
+        type: string
+      name:
+        example: Mesin Daur Ulang Kecil 1.5 Ton
+        type: string
+      price:
+        example: 1000000
+        type: integer
+      stock:
+        example: 10
+        type: integer
+    type: object
+  response.LoginResponse:
+    properties:
+      email:
+        example: john@gmail.com
+        type: string
+      id:
+        example: uuid
+        type: string
+      token:
+        example: token
+        type: string
+    type: object
+  response.RentConfirmRespond:
+    properties:
+      address:
+        example: Jl. Setiabudi No. 1, Jakarta, Indonesia
+        type: string
+      admin_id:
+        example: uuid
+        type: string
+      date_start:
+        example: 2024-00-00 00:00:00
+        type: string
+      delivery:
+        example: true
+        type: boolean
+      duration:
+        example: 1
+        type: integer
+      fee:
+        example: 100000
+        type: integer
+      id:
+        example: 1
+        type: integer
+      payment_method:
+        example: http://cloudinary.com/photo/2016/03/31/15/32/robot-1295393_960_720.png
+        type: string
+      rent:
+        items:
+          $ref: '#/definitions/response.RentDetails'
+        type: array
+      return_time:
+        example: 2024-00-00 00:00:00
+        type: string
+      status:
+        example: pending
+        type: string
+      user_data:
+        $ref: '#/definitions/prototype_api_controller_rent_confirm_response.UserData'
+    type: object
+  response.RentDetails:
+    properties:
+      equipment_id:
+        type: integer
+      name:
+        type: string
+      total:
+        type: integer
+    type: object
+  response.RentDetailsInfo:
+    properties:
+      equipment_id:
+        type: integer
+      name:
+        type: string
+      quantity:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.RentResponse:
+    properties:
+      equipment:
+        allOf:
+        - $ref: '#/definitions/response.EquipmentDetails'
+        description: EquipmentId int              `json:"equipment_id"`
+      id:
+        example: 1
+        type: integer
+      quantity:
+        example: 1
+        type: integer
+      total:
+        example: 100000
+        type: integer
+      user_data:
+        allOf:
+        - $ref: '#/definitions/prototype_api_controller_rent_response.UserData'
+        description: UserId uuid.UUID `json:"user_id"`
+    type: object
+  response.RentalInfoRespond:
+    properties:
+      address:
+        example: Jl. Setiabudi No. 1, Jakarta, Indonesia
+        type: string
+      duration:
+        example: 1
+        type: integer
+      fee:
+        example: 100000
+        type: integer
+      id:
+        example: 1
+        type: integer
+      rent:
+        items:
+          $ref: '#/definitions/response.RentDetailsInfo'
+        type: array
+      return_time:
+        example: "2024-11-10 09:00:00"
+        type: string
+      status:
+        example: Returned
+        type: string
+      user_data:
+        $ref: '#/definitions/prototype_api_controller_rent_confirm_response.UserData'
+    type: object
+  response.UserResponse:
+    properties:
+      email:
+        example: john@gmail.com
+        type: string
+      id:
+        example: uuid
+        type: string
+      name:
+        example: John Doe
+        type: string
+      username:
+        example: johndoe
+        type: string
+    type: object
+info:
+  contact:
+    url: http://www.swagger.io/support
+  description: Mini Project tentang penyewaan alat-alat bertema lingkungan mulai dari
+    alat perawatan tanaman, kebersihan lingkungan, alat hiking dan camping, dan alat
+    proses daur ulang.
+  title: Chandra Mini Project
+  version: "1.0"
+paths:
+  /admin/confirm/{id}:
+    put:
+      description: Confirmation Data Rental by Admin
+      operationId: Confirmiation-Rental
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentConfirmRespond'
+        "400":
+          description: Bad Request
+      summary: Confirmation Data Rental
+      tags:
+      - Confirmation Rental
+  /admin/equipment:
+    post:
+      description: Post Equipment
+      operationId: Post-Equipment
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EquipmentResponse'
+        "400":
+          description: Bad Request
+      summary: Post Equipment
+      tags:
+      - Equipment
+  /admin/equipment/category:
+    post:
+      description: Post Category
+      operationId: Post-Category
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Create data Success
+          schema:
+            $ref: '#/definitions/response.CategoryResponse'
+        "400":
+          description: Bad Request
+      summary: Post Category
+      tags:
+      - Category
+  /admin/info:
+    get:
+      description: Admin can see all info user that have Returned and not returned
+      operationId: Info-Rerutned
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentalInfoRespond'
+        "400":
+          description: Bad Request
+      summary: Get All Info Returned and not returned
+      tags:
+      - Info data of the user who rented
+  /admin/info{id}:
+    put:
+      description: Admin can confirm that user have returned equipment and not returned
+        it
+      operationId: Confirmation-Rerutned-data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentalInfoRespond'
+        "400":
+          description: Bad Request
+      summary: Update Data Returned and not returned equipment
+      tags:
+      - Info data of the user who rented
+  /confirm:
+    get:
+      description: Get All Data Confirmiation
+      operationId: Get-All-Confirmiation
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentConfirmRespond'
+        "400":
+          description: Bad Request
+      summary: Get All Data Confirmiation
+      tags:
+      - Confirmation Rental
+    post:
+      description: Post Data Confirmiation
+      operationId: Post-Confirmiation
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentConfirmRespond'
+        "400":
+          description: Bad Request
+      summary: Post Data Confirmiation
+      tags:
+      - Confirmation Rental
+  /confirm/user:
+    get:
+      description: User Get All Data Confirmiation
+      operationId: Get-All-Confirmiation-For-User
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentConfirmRespond'
+        "400":
+          description: Bad Request
+      summary: Get All Data Confirmation for User
+      tags:
+      - Confirmation Rental
+  /confirm/user/{id}:
+    delete:
+      description: User Can cancel confirmation before it got reviewed by admin
+      operationId: Cancel-Data-Confirmation-For-User
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentConfirmRespond'
+        "400":
+          description: Bad Request
+      summary: Cancel Data Confirmation for User
+      tags:
+      - Confirmation Rental
+  /equipment:
+    get:
+      description: Get All Equipment
+      operationId: Get-All-Equipment
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EquipmentResponse'
+        "400":
+          description: Bad Request
+      summary: Get All Equipment
+      tags:
+      - Equipment
+  /equipment/category:
+    get:
+      description: Get All Category
+      operationId: Get-All-Category
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CategoryResponse'
+        "400":
+          description: Bad Request
+      summary: Get All Category
+      tags:
+      - Category
+  /login:
+    post:
+      description: User can login with email and password
+      operationId: Login-User
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LoginResponse'
+        "400":
+          description: Bad Request
+      summary: Login for user
+      tags:
+      - Register
+  /register:
+    post:
+      description: User can register with name, email and password
+      operationId: Register-User
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserResponse'
+        "400":
+          description: Bad Request
+      summary: Signup for user
+      tags:
+      - Register
+  /rent:
+    post:
+      description: Get All Data Rent
+      operationId: Post-Rent
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentResponse'
+        "400":
+          description: Bad Request
+      summary: Get All Data Rent
+      tags:
+      - Rent
+  /rent/user:
+    get:
+      description: Get All Data Rent For User
+      operationId: Get-User-Rent
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentResponse'
+        "400":
+          description: Bad Request
+      summary: Get All Data Rent For User
+      tags:
+      - Rent
+  /rent/user{id}:
+    put:
+      description: Update Data Rent
+      operationId: Update-Rent
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RentResponse'
+        "400":
+          description: Bad Request
+      summary: Update Data Rent
+      tags:
+      - Rent
+swagger: "2.0"

@@ -22,6 +22,14 @@ type RentConfirmController struct {
 	equipmentusecase domain.EquipmentUseCaseInterface
 }
 
+// @Tags Confirmation Rental
+// @Summary Post Data Confirmiation
+// @Description Post Data Confirmiation
+// @ID Post-Confirmiation
+// @Produce json
+// @Success 200 {object} response.RentConfirmRespond
+// @Failure 400
+// @Router /confirm [post]
 func (uc *RentConfirmController) PostRentConfirm(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 	userID, _, _, err := md.ExtractToken(token)
@@ -131,6 +139,14 @@ func (uc *RentConfirmController) GetById(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", rentConfirmResponse))
 }
 
+// @Tags Confirmation Rental
+// @Summary Get All Data Confirmiation
+// @Description Get All Data Confirmiation
+// @ID Get-All-Confirmiation
+// @Produce json
+// @Success 200 {object} response.RentConfirmRespond
+// @Failure 400
+// @Router /confirm [get]
 func (uc *RentConfirmController) GetAll(c echo.Context) error {
 	res, err := uc.rentconfirmUseCase.GetAll()
 	if err != nil {
@@ -147,6 +163,14 @@ func (uc *RentConfirmController) GetAll(c echo.Context) error {
 // New Feature
 // Get User Rents Confirmation by User id
 
+// @Tags Confirmation Rental
+// @Summary Get All Data Confirmation for User
+// @Description User Get All Data Confirmiation
+// @ID Get-All-Confirmiation-For-User
+// @Produce json
+// @Success 200 {object} response.RentConfirmRespond
+// @Failure 400
+// @Router /confirm/user [get]
 func (uc *RentConfirmController) FindRentConfirmByUserId(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 
@@ -158,7 +182,7 @@ func (uc *RentConfirmController) FindRentConfirmByUserId(c echo.Context) error {
 
 	rentConfirms, err := uc.rentconfirmUseCase.FindRentConfirmByUserId(userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, domain.NewErrorResponse(constant.ErrFindData.Error()))
+		return c.JSON(http.StatusBadRequest, domain.NewErrorResponse(constant.ErrFindData.Error()))
 	}
 
 	// Conversi Data rent confirm to rent confirm response
@@ -171,6 +195,14 @@ func (uc *RentConfirmController) FindRentConfirmByUserId(c echo.Context) error {
 }
 
 // Admin
+// @Tags Confirmation Rental
+// @Summary Confirmation Data Rental
+// @Description Confirmation Data Rental by Admin
+// @ID Confirmiation-Rental
+// @Produce json
+// @Success 200 {object} response.RentConfirmRespond
+// @Failure 400
+// @Router /admin/confirm/{id} [put]
 func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 	adminID, _, _, err := md.ExtractToken(token)
@@ -216,6 +248,14 @@ func (uc *RentConfirmController) ConfirmAdmin(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, rentResponse))
 }
 
+// @Tags Confirmation Rental
+// @Summary Cancel Data Confirmation for User
+// @Description User Can cancel confirmation before it got reviewed by admin
+// @ID Cancel-Data-Confirmation-For-User
+// @Produce json
+// @Success 200 {object} response.RentConfirmRespond
+// @Failure 400
+// @Router /confirm/user/{id} [delete]
 func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 	userID, _, _, err := md.ExtractToken(token)
@@ -248,6 +288,15 @@ func (uc *RentConfirmController) CancelRentConfirmByUserId(c echo.Context) error
 }
 
 // Rental Info
+
+// @Tags Info data of the user who rented
+// @Summary Get All Info Returned and not returned
+// @Description Admin can see all info user that have Returned and not returned
+// @ID Info-Rerutned
+// @Produce json
+// @Success 200 {object} response.RentalInfoRespond
+// @Failure 400
+// @Router /admin/info [get]
 func (uc *RentConfirmController) GetAllInfoRental(c echo.Context) error {
 	res, err := uc.rentconfirmUseCase.GetAllInfoRental()
 	if err != nil {
@@ -261,6 +310,14 @@ func (uc *RentConfirmController) GetAllInfoRental(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Get Data Success", respon))
 }
 
+// @Tags Info data of the user who rented
+// @Summary Update Data Returned and not returned equipment
+// @Description Admin can confirm that user have returned equipment and not returned it
+// @ID Confirmation-Rerutned-data
+// @Produce json
+// @Success 200 {object} response.RentalInfoRespond
+// @Failure 400
+// @Router /admin/info{id} [put]
 func (uc *RentConfirmController) ConfirmReturnRental(c echo.Context) error {
 	var conf request.RentConfirmRequest
 	if err := c.Bind(&conf); err != nil {

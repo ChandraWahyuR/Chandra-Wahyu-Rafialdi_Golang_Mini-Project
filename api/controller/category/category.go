@@ -17,7 +17,16 @@ type CategoryController struct {
 	categoryUseCase domain.CategoryEquipmentUseCaseInterface
 }
 
+// @Tags Category
+// @Summary Get All Category
+// @Description Get All Category
+// @ID Get-All-Category
+// @Produce json
+// @Success 200 {object} response.CategoryResponse
+// @Failure 400
+// @Router /equipment/category [get]
 func (uc *CategoryController) GetAll(c echo.Context) error {
+
 	res, err := uc.categoryUseCase.GetAll()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: constant.ErrDataNotFound.Error()})
@@ -30,6 +39,14 @@ func (uc *CategoryController) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse("Create data Success", equipmentResponses))
 }
 
+// @Tags Category
+// @Summary Post Category
+// @Description Post Category
+// @ID Post-Category
+// @Produce json
+// @Success 200 {object} response.CategoryResponse "Create data Success"
+// @Failure 400
+// @Router /admin/equipment/category [post]
 func (uc *CategoryController) PostCategory(c echo.Context) error {
 	var equip request.CategoryRequest
 	if err := c.Bind(&equip); err != nil {

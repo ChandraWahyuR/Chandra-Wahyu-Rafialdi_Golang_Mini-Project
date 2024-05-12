@@ -6,14 +6,14 @@ import (
 )
 
 type RentalInfoRespond struct {
-	ID         int               `json:"id"`
+	ID         int               `json:"id" example:"1"`
 	User       UserData          `json:"user_data"`
 	Rent       []RentDetailsInfo `json:"rent"`
-	Duration   int               `json:"duration"`
-	Fee        int               `json:"fee"`
-	Address    string            `json:"address"`
-	ReturnTime time.Time         `json:"return_time"`
-	Status     string            `json:"status"`
+	Duration   int               `json:"duration" example:"1"`
+	Fee        int               `json:"fee" example:"100000"`
+	Address    string            `json:"address" example:"Jl. Setiabudi No. 1, Jakarta, Indonesia"`
+	ReturnTime time.Time         `json:"return_time" example:"2024-11-10 09:00:00"`
+	Status     string            `json:"status" example:"Returned"`
 }
 
 type RentDetailsInfo struct {

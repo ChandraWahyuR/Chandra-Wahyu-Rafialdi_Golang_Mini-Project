@@ -32,6 +32,14 @@ func (uc *RentController) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessGetData, respon))
 }
 
+// @Tags Rent
+// @Summary Get All Data Rent
+// @Description Get All Data Rent
+// @ID Post-Rent
+// @Produce json
+// @Success 200 {object} response.RentResponse
+// @Failure 400
+// @Router /rent [post]
 func (uc *RentController) PostRent(c echo.Context) error {
 	// Take Jwt token for define user id
 	// then insert it to rent user_id
@@ -137,6 +145,14 @@ func (uc *RentController) GetById(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessGetData, resp))
 }
 
+// @Tags Rent
+// @Summary Update Data Rent
+// @Description Update Data Rent
+// @ID Update-Rent
+// @Produce json
+// @Success 200 {object} response.RentResponse
+// @Failure 400
+// @Router /rent/user{id} [put]
 func (uc *RentController) UpdateRent(c echo.Context) error {
 	// Bind to db
 	var rent request.RentRequest
@@ -155,7 +171,7 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	// And equipment took the id to accsess price from table equipment id
 	rentToUpdate, err := uc.rentusecase.GetById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, domain.BaseErrorResponse{Status: false, Message: "id not found"})
+		return c.JSON(http.StatusBadRequest, domain.BaseErrorResponse{Status: false, Message: "id not found"})
 	}
 
 	// Check if rent is confirmed, if yes then it cannot be updated again
@@ -187,7 +203,7 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 
 	updateRent, err := uc.rentusecase.UpdateRent(id, &rentData)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, constant.ErrUpdateData)
+		return c.JSON(http.StatusBadRequest, constant.ErrUpdateData)
 	}
 	_, err = uc.equipmentusecase.UpdateEquipment(rentToUpdate.EquipmentId, equipment)
 	if err != nil {
@@ -197,6 +213,14 @@ func (uc *RentController) UpdateRent(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.NewSuccessResponse(constant.SuccessUpdate, respon))
 }
 
+// @Tags Rent
+// @Summary Get All Data Rent For User
+// @Description Get All Data Rent For User
+// @ID Get-User-Rent
+// @Produce json
+// @Success 200 {object} response.RentResponse
+// @Failure 400
+// @Router /rent/user [get]
 func (uc *RentController) GetByUserID(c echo.Context) error {
 	token := c.Request().Header.Get("Authorization")
 

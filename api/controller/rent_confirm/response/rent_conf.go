@@ -8,18 +8,18 @@ import (
 )
 
 type RentConfirmRespond struct {
-	ID            int           `json:"id"`
+	ID            int           `json:"id" example:"1"`
 	User          UserData      `json:"user_data"`
 	Rent          []RentDetails `json:"rent" gorm:"foreignKey:RentConfirmID"`
-	Duration      int           `json:"duration"`
-	Fee           int           `json:"fee"`
-	PaymentMethod string        `json:"payment_method"`
-	Delivery      bool          `json:"delivery"`
-	Address       string        `json:"address"`
-	AdminId       uuid.UUID     `json:"admin_id"`
-	Status        string        `json:"status"`
-	DateStart     time.Time     `json:"date_start"`
-	ReturnTime    time.Time     `json:"return_time"`
+	Duration      int           `json:"duration" example:"1"`
+	Fee           int           `json:"fee" example:"100000"`
+	PaymentMethod string        `json:"payment_method" example:"http://cloudinary.com/photo/2016/03/31/15/32/robot-1295393_960_720.png"`
+	Delivery      bool          `json:"delivery" example:"true"`
+	Address       string        `json:"address" example:"Jl. Setiabudi No. 1, Jakarta, Indonesia"`
+	AdminId       uuid.UUID     `json:"admin_id" example:"uuid"`
+	Status        string        `json:"status" example:"pending"`
+	DateStart     time.Time     `json:"date_start" example:"2024-00-00 00:00:00"`
+	ReturnTime    time.Time     `json:"return_time" example:"2024-00-00 00:00:00"`
 }
 
 type RentDetails struct {

@@ -15,6 +15,14 @@ type UserController struct {
 	userUseCase domain.UseCaseInterface
 }
 
+// @Tags Register
+// @Summary Signup for user
+// @Description User can register with name, email and password
+// @ID Register-User
+// @Produce json
+// @Success 200 {object} response.UserResponse
+// @Failure 400
+// @Router /register [post]
 func (uc *UserController) Register(c echo.Context) error {
 	var userRegister request.UserRegister
 	c.Bind(&userRegister)
@@ -49,6 +57,14 @@ func (uc *UserController) Register(c echo.Context) error {
 }
 
 // Login
+// @Tags Register
+// @Summary Login for user
+// @Description User can login with email and password
+// @ID Login-User
+// @Produce json
+// @Success 200 {object} response.LoginResponse
+// @Failure 400
+// @Router /login [post]
 func (uc *UserController) Login(c echo.Context) error {
 	var userLogin request.UserLogin
 	c.Bind(&userLogin)

@@ -12,9 +12,18 @@ import (
 	"prototype/repository"
 	"prototype/usecase"
 
+	_ "prototype/docs"
+
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+// @title Chandra Mini Project
+// @version 1.0
+// @description Mini Project tentang penyewaan alat-alat bertema lingkungan mulai dari alat perawatan tanaman, kebersihan lingkungan, alat hiking dan camping, dan alat proses daur ulang.
+// @contact.url http://www.swagger.io/support
+// @chandrawahyurafialdi.email support@swagger.io
+// @BasePath /v2
 func main() {
 	config.LoadFileEnv()
 	config.InitConfigDb()
@@ -48,7 +57,8 @@ func main() {
 		CategoryEquipment: categoryController,
 		RentConfirm:       rentConfirmController,
 	}
-
+	// Swagger
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	routes.InitRoute(e)
 	e.Logger.Fatal(e.Start(":8080"))
 }
